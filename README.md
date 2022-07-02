@@ -271,7 +271,7 @@ throw_on($user->status === -1, '异常信息', 0x000001);
     ],
 ```
 
-** MyAnnoLogHandler 对象必须实现接口 \Zeaven\EasySuit\Annotations\AnnoLogHandler;
+**MyAnnoLogHandler 对象必须实现接口 \Zeaven\EasySuit\Annotations\AnnoLogHandler;**
 
 ### 在控制器使用日志
 

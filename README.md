@@ -3,7 +3,7 @@
 
 - [Laravel Easy Suit](#laravel-easy-suit)
   * [安装](#安装)
-  * [Postman 代码生成器](#Postman 代码生成器)
+  * [Postman 代码生成器](#Postman-代码生成器)
   * [Request封装](#Request封装)
     + [定义Request对象](#定义Request对象)
     + [Request对象参数配置](#Request对象参数配置)
@@ -23,7 +23,7 @@
       - [安装JWT第三方包](#安装JWT第三方包)
       - [配置JWT](#配置JWT)
     + [使用JWT认证](#使用JWT认证)
-  * [ResponseMapper 资源映射](#ResponseMapper 资源映射)
+  * [ResponseMapper 资源映射](#ResponseMapper-资源映射)
   * [Model扩展](#Model扩展)
     + [开启分页简化](#开启分页简化)
     + [开启扩展](#开启扩展)

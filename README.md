@@ -228,6 +228,10 @@ config('easy_suit.anno_log.enable') 配置项控制是否开启日志
 
 ## Postman 代码生成器
 
+使用前先在.env文件添加postman的apiToken：
+
+POSTMAN_API_TOKEN=PMAK-62382eb7bad8c11a75a6c18e-3e3092663f6604f2f751362b4ac30ef4ec
+
 ![pm:run使用](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/pm.png)
 
 postman接口定义如下:

@@ -1,0 +1,10 @@
+<?php
+
+namespace {{namespace}};
+
+{{comment}}
+class {{class}}
+{
+
+    /** #generate function# 删除后将无法自动生成控制器方法 */
+}

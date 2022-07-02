@@ -1,0 +1,20 @@
+<?php
+
+namespace {{namespace}};
+
+use App\Http\Controllers\Controller;
+{{logic_namespace}}
+{{request}}
+
+{{comment}}
+class {{class}} extends Controller
+{
+    protected $logic;
+
+    public function __construct({{logic}} $logic)
+    {
+        $this->logic = $logic;
+    }
+
+    /** #generate function# 删除后将无法自动生成控制器方法 */
+}

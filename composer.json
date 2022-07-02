@@ -1,0 +1,46 @@
+{
+    "name": "zeaven/laravel-easy-suit",
+    "description": "easy setup package",
+    "type": "library",
+    "require": {
+        "php": ">=8.1",
+        "hidehalo/nanoid-php": "^1.1",
+        "tymon/jwt-auth": "dev-develop",
+        "meilisearch/meilisearch-php": "^0.23.2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Zeaven\\EasySuit\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "zeaven",
+            "email": "zeaven@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Zeaven\\EasySuit\\ServiceProvider",
+                "Zeaven\\EasySuit\\ErrorCode\\ErrorCodeProvider",
+                "Zeaven\\EasySuit\\Request\\RequestExtensionProvider",
+                "Zeaven\\EasySuit\\EloquentExtension\\EloquentExtensionProvider",
+                "Zeaven\\EasySuit\\Validators\\ValidatorServiceProvider",
+                "Zeaven\\EasySuit\\SanctumExtension\\SanctumExtensionProvider",
+                "Zeaven\\EasySuit\\MeiliSearch\\MeiliSearchServiceProvider"
+            ],
+            "aliases": {
+                "ErrorCode": "Zeaven\\EasySuit\\ErrorCode\\Facade"
+            }
+        }
+    }
+}

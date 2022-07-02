@@ -1,0 +1,19 @@
+<?php
+
+namespace {{namespace}};
+
+use App\Http\Requests\{{BaseRequest}};
+
+{{comment}}
+class {{class}} extends {{BaseRequest}}
+{
+    /**
+     * 返回参数验证规则.
+     *
+     * @return array
+     */
+    protected function rule(): array
+    {
+        {{params}}
+    }
+}

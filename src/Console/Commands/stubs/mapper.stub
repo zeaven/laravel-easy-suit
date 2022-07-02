@@ -1,0 +1,30 @@
+<?php
+{{comment}}
+
+namespace {{namespace}};
+
+use Zeaven\EasySuit\Http\ResponseMappers\BaseResponseMapper;
+
+class {{class}} extends BaseResponseMapper
+{
+    /**
+     * 属性映射
+     * 'username' => 'user.0.username',
+     *  'user.*' => [
+     *      'name' => 'username',
+     *      'status' => 'status_text'
+     *  ]
+     * @type {Array}
+     */
+    protected $mapper = [
+    ];
+
+    /**
+     * 属性隐藏
+     * 'user.*.username',
+    *  'user.*.mobile'
+     * @type {Array}
+     */
+    protected $hidden = [
+    ];
+}

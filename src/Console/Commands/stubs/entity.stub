@@ -1,0 +1,12 @@
+<?php
+{{comment}}
+
+namespace {{namespace}};
+
+use App\Domain\Core\DomainEntity;
+use {{model_class}};
+
+class {{class}} extends DomainEntity
+{
+    const ENTITY = {{model}}::class;
+}

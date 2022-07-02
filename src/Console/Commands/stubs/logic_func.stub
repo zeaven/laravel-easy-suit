@@ -1,0 +1,11 @@
+/**
+     * {{name}}
+     * {{comment}}
+     * @return Response
+     */
+    public function {{action}}($params = null)
+    {
+        // TODO:
+    }
+
+    /** #generate function# 删除后将无法自动生成控制器方法 */

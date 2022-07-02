@@ -1,0 +1,13 @@
+<?php
+{{comment}}
+
+namespace {{namespace}};
+
+use App\Domain\Core\DomainContext;
+
+class {{class}} extends DomainContext
+{
+    protected array $services = [
+        // 'name' => 'namespace'
+    ];
+}

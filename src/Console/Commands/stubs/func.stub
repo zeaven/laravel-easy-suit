@@ -1,0 +1,15 @@
+/**
+     * {{name}}
+     * {{comment}}
+     * @param  {{request}} $request [description]
+     * @return Response
+     */
+    public function {{action}}({{request}} $request{{params}})
+    {
+        {{query}}
+        $result = $this->logic->{{action}}();
+
+        return ok($result);
+    }
+
+    /** #generate function# 删除后将无法自动生成控制器方法 */

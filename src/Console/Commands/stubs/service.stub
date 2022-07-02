@@ -1,0 +1,12 @@
+<?php
+{{comment}}
+
+namespace {{namespace}};
+
+use App\Domain\Core\DomainService;
+use {{ctx_class}};
+
+class {{class}} extends DomainService
+{
+    const CONTEXT = {{ctx}}::class;
+}

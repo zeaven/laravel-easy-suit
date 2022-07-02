@@ -228,4 +228,4 @@ config('easy_suit.anno_log.enable') 配置项控制是否开启日志
 
 ## Postman 代码生成器
 
-(./image/pm.png)
+(blob/main/image/pm.png?raw=true)

@@ -279,7 +279,7 @@ config('easy_suit.anno_log.enable') 配置项控制是否开启日志
 
 内置的Authenticate对Token验证的同时，如果token超过刷新周期，
 
-则会自动刷新对应的Token，通过响应头下发给客户端，所以客户端应该在请求成功回调中，判断响应头是否包含“Authorization”字段，有的话，记得刷新本场Token。
+则会自动刷新对应的Token，通过响应头下发给客户端，所以客户端应该在请求成功回调中，判断响应头是否包含“Authorization”字段，有的话，记得刷新本地Token。
 
 ```javascript
 $axios.onResponse((response) => {

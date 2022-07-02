@@ -20,9 +20,10 @@ class Authenticate extends Middleware
     public function handle($request, Closure $next, ...$guards)
     {
         if (count($guards)) {
-            if ($guards[0] === 'sanctum') {
+            $authConfig = config('easy_suit.auth');
+            if ($guards[0] === 'sanctum' && $authConfig['sanctum']) {
                 return (new TokenRefreshAuthenticate($this->auth))->handle($request, $next, 'sanctum');
-            } else if ($guards[0] === 'jwt') {
+            } else if ($guards[0] === 'jwt' && $authConfig['jwt']) {
                 return (new AutoRefreshJwtAuth($this->auth))->handle($request, $next, 'jwt');
             }
         }

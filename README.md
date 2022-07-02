@@ -5,6 +5,33 @@
 ## 安装
 
 
+
+## Postman 代码生成器
+
+使用前先在.env文件添加postman的apiToken：
+
+POSTMAN_API_TOKEN=xxx
+
+然后执行 artisan pm:run
+
+![pm:run使用](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/pm.png)
+
+postman接口定义如下:
+
+![postman接口定义](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/postman.png)
+
+生成的控制器代码：
+![controller](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/controller.png)
+
+生成的Request代码：
+![request](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/request.png)
+
+其他文件不一一展示，接口代码生成后，只需要配置参数验证规则，和在Logics目录编写业务逻辑代码即可
+
+路由配置自动添加，但是中间件需要自行配置
+
+
+
 ## Request封装
 
 BaseRequest继承于FormRequest，增加一个rule方法配置参数规则。
@@ -72,6 +99,7 @@ rule方法返回参数的配置，完整配置字段如下：
 > 4. as 别名，使用values()方法返回的key值；
 
 
+
 ## 全局返回统一格式
 
 在使用前需要先添加路由中间件：
@@ -115,6 +143,9 @@ rule方法返回参数的配置，完整配置字段如下：
 
 > fields 指定返回的字段，以及字段名称，如果定义为false则不显示
 > exclude 可定义排除的路由
+
+在控制器中 调用ok()全局方法，返回即可。
+
 
 
 ## 错误码和异常抛出
@@ -174,6 +205,7 @@ throw_on($user->status === -1, '异常信息', 0x000001);
 所有异常抛出方法的最后一个参数可以传入一个数组，用于本地化参数替换，[替换翻译字符串中的参数](https://learnku.com/docs/laravel/9.x/localization/12232#replacing-parameters-in-translation-strings)
 
 
+
 ## 注解日志
 
 注解日志采用控制器方法添加注解的方式实现，在使用前需要先添加路由中间件：
@@ -226,24 +258,143 @@ config('easy_suit.anno_log.enable') 配置项控制是否开启日志
 -   nickname
 
 
-## Postman 代码生成器
 
-使用前先在.env文件添加postman的apiToken：
+## 用户认证
 
-POSTMAN_API_TOKEN=xxx
+### 配置
 
-![pm:run使用](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/pm.png)
+在easy_suit.php文件中
+```php
+    'auth' => [
+        'sanctum' => true,
+        'jwt' => [
+            'enable' => true,
+            'guard' => 'jwt'
+        ],
+    ],
+```
 
-postman接口定义如下:
 
-![postman接口定义](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/postman.png)
+### 自动刷新Token
 
-生成的控制器代码：
-![controller](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/controller.png)
+内置的Authenticate对Token验证的同时，如果token超过刷新周期，
 
-生成的Request代码：
-![request](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/request.png)
+则会自动刷新对应的Token，通过响应头下发给客户端，所以客户端应该在请求成功回调中，判断响应头是否包含“Authorization”字段，有的话，记得刷新本场Token。
 
-其他文件不一一展示，接口代码生成后，只需要配置参数验证规则，和在Logics目录编写业务逻辑代码即可
+```javascript
+$axios.onResponse((response) => {
+    // 刷新token
+    if ('authorization' in response.headers) {
+      // eslint-disable-next-line no-unused-vars
+      const [_, token] = response.headers.authorization.split(' ')
+      store.commit('SET_TOKEN', token)
+    }
+    return Promise.resolve(response.data)
+  })
+````
 
-路由文件需要自行配置中间件，如果不需要可以不管
+
+ **注：自动刷新token必须在客户端请求中添加Authorization请求头**
+
+
+### Sanctum认证
+
+在配置文件中启用Sanctum认证后，将会使用内置的Authenticate接管认证过程，
+
+同时为Sanctum认证增加自动刷新token功能，具体配置项如下；
+
+> 
+> ```php
+>     'expiration' => 20160,  // 两周过期时间
+>     'refresh_ttl' => 60,    // 一个小时刷新一次token
+>     'refresh_grace_ttl' => 5, // 刷新token的灰色时间，防止同一token并发多个请求刷新多次
+>     'remove_refresh_expire_token' => true,  // 是否移除已刷新的token
+> ```
+> 
+> 如上配置，token将会在每小时刷新一次，每次有效期是两周
+> 即两周内有访问，token有效期就可以一直往后延
+> 每次刷新后，原来的token也可以选择是否需要删除
+
+
+### 使用Sanctum认证
+
+在路由配置中添加auth中间件
+```php
+Route::middleware('auth:sanctum')->group(function () {
+    // 你的路由
+});
+```
+
+### JWT认证
+
+#### 安装JWT第三方包
+
+Laravel 9.x 不支持 tymon/jwt-auth 包，但可以指定开发版
+```php
+composer require "tymon/jwt-auth:dev-develop"
+```
+
+#### 配置JWT
+
+按照tymon/jwt-auth配置，在auth.config添加jwt的守卫配置后
+```php
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'jwt' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ]
+    ],
+
+```
+
+在easy_suit.php配置文件中，也把auth.jwt.guard改成你添加的守卫名称，这里都是"jwt"
+
+
+### JWT认证
+
+在配置文件中启用JWT认证后，将会使用内置的Authenticate接管认证过程，
+
+同时为JWT认证增加自动刷新token功能。
+
+
+### 使用JWT认证
+
+在路由配置中添加auth中间件
+```php
+Route::middleware('auth:jwt')->group(function () {
+    // 你的路由
+});
+```
+
+
+
+## ResponseMapper 资源映射
+
+
+
+## Model扩展
+
+在easy_suit.php配置扩展开关
+
+```php
+    'model' => [
+        // 或 'simple_pagination' => '自定义分页对象'
+        'simple_pagination' => true,
+        'extension' => true
+    ]
+
+```
+
+### 开启分页简化
+
+Laravel默认分页对象返回的字段过多，开启简化后只返回两个字段"items"、"total"
+
+### 开启扩展
+
+为Laravel Model增加几个扩展方法
+
+

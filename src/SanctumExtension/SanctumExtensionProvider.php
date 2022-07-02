@@ -36,9 +36,11 @@ class SanctumExtensionProvider extends ServiceProvider
      */
     public function boot()
     {
-        Event::listen(
-            TokenAuthenticated::class,
-            [TokenAuthenticatedListener::class, 'handle']
-        );
+        if (config('easy_suit.auth.sanctum')) {
+            Event::listen(
+                TokenAuthenticated::class,
+                [TokenAuthenticatedListener::class, 'handle']
+            );
+        }
     }
 }

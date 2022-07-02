@@ -4,6 +4,13 @@ return [
     'postman' => [
         'token' => env('POSTMAN_API_TOKEN'),
     ],
+    'auth' => [
+        'sanctum' => true,
+        'jwt' => [
+            'enable' => true,
+            'guard' => 'jwt'
+        ],
+    ],
     'anno_log' => [
         'enable' => env('EASY_SUIT_ANNO_LOG', true),
     ],
@@ -25,4 +32,8 @@ return [
             'web/*',
         ]
     ],
+    'model' => [
+        'simple_pagination' => true,
+        'extension' => true
+    ]
 ];

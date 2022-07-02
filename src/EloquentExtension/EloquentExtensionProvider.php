@@ -30,6 +30,9 @@ class EloquentExtensionProvider extends ServiceProvider
 
     private function eloquentBuildExtends()
     {
+        if (!config('easy_suit.model.extension')) {
+            return;
+        }
         MorphTo::macro('_select', function ($columns) {
             $columns = is_array($columns) ? $columns : func_get_args();
             $this->macroBuffer[] = ['method' => 'select', 'parameters' => $columns];
@@ -180,14 +183,21 @@ class EloquentExtensionProvider extends ServiceProvider
 
     private function eloquentPagination()
     {
-        // 自定义分页，将分页属性 data 改为 items
-        $this->app->bind(
-            LengthAwarePaginator::class,
-            function ($_, $arguments) {
-                extract($arguments);
-                return new SlimLengthAwarePaginator($items, $total, $perPage, $currentPage, $options);
-            }
-        );
+        $pageConfig = config('easy_suit.model.simple_pagination');
+        if ($pageConfig) {
+            // 自定义分页，将分页属性 data 改为 items
+            $this->app->bind(
+                LengthAwarePaginator::class,
+                function ($_, $arguments) use ($pageConfig) {
+                    extract($arguments);
+                    if (is_string($pageConfig) && class_exists($pageConfig)) {
+                        return new $pageConfig($items, $total, $perPage, $currentPage, $options);
+                    } else {
+                        return new SlimLengthAwarePaginator($items, $total, $perPage, $currentPage, $options);
+                    }
+                }
+            );
+        }
     }
 
     /**

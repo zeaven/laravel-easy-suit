@@ -1,6 +1,7 @@
 # Laravel Easy Suit
 这是一个为了方便使用Laravel框架开发api而提供的简单封装套件。
 
+
 - [Laravel Easy Suit](#laravel-easy-suit)
   * [安装](#安装)
   * [Postman 代码生成器](#Postman-代码生成器)

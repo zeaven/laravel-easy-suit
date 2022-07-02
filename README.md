@@ -100,15 +100,13 @@ class LoginRequest extends BaseRequest
 Request对象提供两个方法获取参数：params和values，*注意：未配置的参数是无法通过这两个方法获取的*
 
 ```php
-[$username, $password] = $request->params();
+[$username, $password] = $request->values();
 // 或
 [$username] = $request->params(['username']);
 // 或
 [$password, $username] = $request->params(['password', 'username']);
 // 或
-$params = $request->params(false);
-// 等同
-$params = $request->values();
+$params = $request->params();
 // $params = ['username' => 'xxx', 'password' => 'xxx']
 ```
 

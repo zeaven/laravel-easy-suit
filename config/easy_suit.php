@@ -13,6 +13,7 @@ return [
     ],
     'anno_log' => [
         'enable' => env('EASY_SUIT_ANNO_LOG', true),
+        'handler' => null
     ],
     // 全局返回格式
     'global_response' => [

@@ -56,7 +56,7 @@ class AnnoLogMiddleware
                 $this->captureUserLog($route->getAction(), $data);
             },
             function ($e) use ($data) {
-                logs('daily')->info($e->getMessage(), [$e->getTraceAsString()]);
+                logs('daily')->error($e->getMessage(), [$e->getTraceAsString()]);
             },
             false
         );
@@ -84,6 +84,11 @@ class AnnoLogMiddleware
             $data['device'] = $browser->platformName() . ', ' . $browser->deviceFamily();
         }
 
-        logger($log, $annotation + $data);
+        $logHandler = config('easy_suit.anno_log.handler');
+        if ($logHandler && class_exists($logHandler)) {
+            (new $logHandler)->handle($log, $annotation + $data);
+        } else {
+            logger($log, $annotation + $data);
+        }
     }
 }

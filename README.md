@@ -262,9 +262,16 @@ throw_on($user->status === -1, '异常信息', 0x000001);
 ```
 
 
-日志默认使用laravel的日志服务，你可以在Zeaven\EasySuit\Annotations\AnnoLogMiddleware.php 修改为保存到你想要的地方
+日志默认使用laravel的日志服务，你可以在easy_suit.php配置文件中修改自定义的处理程序，以及是否开启日志
 
-config('easy_suit.anno_log.enable') 配置项控制是否开启日志
+```php
+    'anno_log' => [
+        'enable' => env('EASY_SUIT_ANNO_LOG', true),
+        'handler' => MyAnnoLogHandler::class
+    ],
+```
+
+** MyAnnoLogHandler 对象必须实现接口 \Zeaven\EasySuit\Annotations\AnnoLogHandler;
 
 ### 在控制器使用日志
 

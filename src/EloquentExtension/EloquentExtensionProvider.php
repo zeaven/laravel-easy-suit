@@ -133,7 +133,7 @@ class EloquentExtensionProvider extends ServiceProvider
             return $this;
         });
 
-        Builder::macro('whenBetween', function ($column, $first, $second) {
+        Builder::macro('betweenWhen', function ($column, $first, $second) {
             $this->when(filled($first) || filled($second), function ($query) use ($column, $first, $second) {
                 if ($first && $second) {
                     $query->whereBetween($column, [$first, $second]);
@@ -146,7 +146,7 @@ class EloquentExtensionProvider extends ServiceProvider
             return $this;
         });
 
-        Builder::macro('whenLike', function ($column, $value) {
+        Builder::macro('likeWhen', function ($column, $value) {
             $this->when(filled($value), function ($query) use ($column, $value) {
                 $query->where($column, 'like', "%{$value}%");
             });

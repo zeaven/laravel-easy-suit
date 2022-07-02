@@ -29,11 +29,11 @@
     + [开启分页简化](#开启分页简化)
     + [开启扩展](#开启扩展)
       - [withs](#withs)
-      - [selectWhen](#selectwhen)
-      - [whereWhen](#wherewhen)
-      - [whenFilled](#whenfilled)
-      - [whenBetween](#whenbetween)
-      - [whenLike](#whenlike)
+      - [selectWhen](#selectWhen)
+      - [whereWhen](#whereWhen)
+      - [whenFilled](#whenFilled)
+      - [betweenWhen](#betweenWhen)
+      - [likeWhen](#likeWhen)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -493,25 +493,25 @@ A::whenFilled($a, $col1, function($q, $a, $col1) => {
 })->get();
 ```
 
-#### whenBetween
+#### betweenWhen
 
 ```php
-A::whenBetween('col1', 1, 10)->get();
+A::betweenWhen('col1', 1, 10)->get();
 // select * from a where col1 between 1, 10
 
-A::whereBetween('col1', 1)->get();
+A::betweenWhen('col1', 1)->get();
 // select * from a where col1 >= 1
 
-A::whereBetween('col1', null, 10)->get();
+A::betweenWhen('col1', null, 10)->get();
 // select * from a where col1 <= 10
 
 ```
 
-#### whenLike
+#### likeWhen
 
 当给定参数有值，则对指定字段模糊查询
 
 ```php
-A::whenLike('col1', 'xyz')->get();
+A::likeWhen('col1', 'xyz')->get();
 // select * from a where col1 like '%xyz%'
 ```

@@ -1,7 +1,40 @@
 # Laravel Easy Suit
 这是一个为了方便使用Laravel框架开发api而提供的简单封装套件。
 
-[toc]
+- [Laravel Easy Suit](#laravel-easy-suit)
+  * [安装](#安装)
+  * [Postman 代码生成器](#Postman 代码生成器)
+  * [Request封装](#Request封装)
+    + [定义Request对象](#定义Request对象)
+    + [Request对象参数配置](#Request对象参数配置)
+  * [全局返回统一格式](#全局返回统一格式)
+  * [错误码和异常抛出](#错误码和异常抛出)
+    + [错误码定义](#错误码定义)
+    + [异常抛出](#异常抛出)
+  * [注解日志](#注解日志)
+    + [在控制器使用日志](#在控制器使用日志)
+    + [内置注解模板变量](#内置注解模板变量)
+  * [用户认证](#用户认证)
+    + [配置](#配置)
+    + [自动刷新Token](#自动刷新Token)
+    + [Sanctum认证](#Sanctum认证)
+    + [使用Sanctum认证](#使用Sanctum认证)
+    + [JWT认证](#JWT认证)
+      - [安装JWT第三方包](#安装JWT第三方包)
+      - [配置JWT](#配置JWT)
+    + [使用JWT认证](#使用JWT认证)
+  * [ResponseMapper 资源映射](#ResponseMapper 资源映射)
+  * [Model扩展](#Model扩展)
+    + [开启分页简化](#开启分页简化)
+    + [开启扩展](#开启扩展)
+      - [withs](#withs)
+      - [selectWhen](#selectwhen)
+      - [whereWhen](#wherewhen)
+      - [whenFilled](#whenfilled)
+      - [whenBetween](#whenbetween)
+      - [whenLike](#whenlike)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 
 ## 安装
@@ -329,6 +362,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 ### JWT认证
 
+在配置文件中启用JWT认证后，将会使用内置的Authenticate接管认证过程，
+
+同时为JWT认证增加自动刷新token功能。
+
 #### 安装JWT第三方包
 
 Laravel 9.x 不支持 tymon/jwt-auth 包，但可以指定开发版
@@ -354,13 +391,6 @@ composer require "tymon/jwt-auth:dev-develop"
 ```
 
 在easy_suit.php配置文件中，也把auth.jwt.guard改成你添加的守卫名称，这里都是"jwt"
-
-
-### JWT认证
-
-在配置文件中启用JWT认证后，将会使用内置的Authenticate接管认证过程，
-
-同时为JWT认证增加自动刷新token功能。
 
 
 ### 使用JWT认证

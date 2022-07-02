@@ -397,4 +397,81 @@ Laravel默认分页对象返回的字段过多，开启简化后只返回两个�
 
 为Laravel Model增加几个扩展方法
 
+#### withs
 
+Laravel 9.18 版本以上推荐直接使用官方的with方法。
+
+withs 用于加载嵌套模型，假如有模型关系 A<-B<-C<-D。
+
+```php
+A::with('b.c.d')
+// 等同于
+A::withs('b', 'c', 'd')
+// 等同于
+A::withs(['b', 'c', 'd'])
+
+// 加载关系模型时选择字段
+A::withs('b:col1,col2,col3', 'c', 'd:col1,col2')
+// 等同于
+A::withs(['b:col1,col2,col3', 'c', 'd:col1,col2'])
+
+// 载关系模型时增加筛选条件
+A::withs([
+    'b:col1,col2,col3' => fn($q) => $q->where('col1', 'xxx'),
+    'c' => fn($q) => $q->select('col1','col2','col3'),
+    'd:col1,col2' => fn($q) => $q->orderBy('col3')
+])
+```
+
+#### selectWhen
+
+如果指定字段数组不为空则使用，否则返回所有字段
+
+```php
+$fields = [];
+A::selectWhen($fields)->get();
+```
+
+#### whereWhen
+
+如果指定过滤条件数组不为空则使用，常用在表格筛选提交的条件中
+
+```php
+$options = ['col1' => 1, 'col2' => 'xxx'];
+A::whereWhen($options)->get();
+```
+
+#### whenFilled
+
+当给定参数有值时，执行回调
+
+```php
+$a = 1;
+$col1 = 'xxx';
+A::whenFilled($a, $col1, function($q, $a, $col1) => {
+    $q->where('col1', $col1)->where('col2', $a);
+})->get();
+```
+
+#### whenBetween
+
+```php
+A::whenBetween('col1', 1, 10)->get();
+// select * from a where col1 between 1, 10
+
+A::whereBetween('col1', 1)->get();
+// select * from a where col1 >= 1
+
+A::whereBetween('col1', null, 10)->get();
+// select * from a where col1 <= 10
+
+```
+
+#### whenLike
+
+当给定参数有值，则对指定字段模糊查询
+
+```php
+A::whenLike('col1', 'xyz')->get();
+// select * from a where col1 like '%xyz%'
+```

@@ -228,4 +228,15 @@ config('easy_suit.anno_log.enable') 配置项控制是否开启日志
 
 ## Postman 代码生成器
 
-(https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/pm.png)
+![pm:run使用](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/pm.png)
+
+postman接口定义如下:
+
+![postman接口定义](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/postman.png)
+
+生成的控制器代码：
+![controller](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/controller.png)
+
+其他文件不一一展示，接口代码生成后，只需要配置参数验证规则，和在Logics目录编写业务逻辑代码即可
+
+路由文件需要自行配置中间件，如果不需要可以不管

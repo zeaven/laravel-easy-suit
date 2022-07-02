@@ -237,6 +237,9 @@ postman接口定义如下:
 生成的控制器代码：
 ![controller](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/controller.png)
 
+生成的Request代码：
+![request](https://raw.githubusercontent.com/zeaven/laravel-easy-suit/main/image/request.png)
+
 其他文件不一一展示，接口代码生成后，只需要配置参数验证规则，和在Logics目录编写业务逻辑代码即可
 
 路由文件需要自行配置中间件，如果不需要可以不管

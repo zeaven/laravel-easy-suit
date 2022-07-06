@@ -414,6 +414,107 @@ Route::middleware('auth:jwt')->group(function () {
 
 ## ResponseMapper 资源映射
 
+对应的是Laravel的*API 资源*，使用的场景不多，所以采用配置的方式将数据转换成JSON格式。
+
+#### Mapper生成
+
+可以通过artisan命令生成Maaper文件
+
+```php
+php artisan gen:mapper user/info
+// 将在路径生成文件 App/Http/ResponseMappers/User/InfoMapper.php
+
+<?php
+namespace App\Http\ResponseMappers\User;
+
+use Zeaven\EasySuit\Http\ResponseMappers\BaseResponseMapper;
+
+class InfoMapper extends BaseResponseMapper
+{
+    protected $mapper = [];
+
+    protected $hidden = [];
+}
+```
+
+### Mapper配置
+
+> mapper属性配置字段映射
+> hidden属性配置字段隐藏
+
+假定当前数据模型如下：
+```php
+$article = [
+    'title' => 'xxx',
+    'content' => 'xxx',
+    'tags' => '',
+    'comments' => [
+        [
+            'user' => ['username' => '用户A', 'vip' => 'x', 'mobile' => 'xxx'],
+            'content' => 'xxx'
+        ],
+    ],
+    'category' => ['name' => 'xxx']
+    'user' => ['username' => '作者', 'vip' => 'x']
+];
+
+```
+
+希望返回的JSON格式如下：
+```json
+{
+    "title": "xxx",
+    "content": "xxx",
+    "comments": [
+        {
+            "user": {"username": "用户A", "mobile": "xx***xx"},
+            "content": "xxx"
+        }
+    ],
+    "category_name": "xxx",
+    "poster_username": "作者",
+    "poster_vip": "x"
+}
+```
+
+对应的mapper配置：
+```php
+    protected $mapper = [
+        // 将模型中category对象的name属性，转换为JSON数据的category_name字段
+        "category_name": "category.name"
+        // 将模型中user对象的所有性情展开到JSON对象下，并添加"poster_"前缀
+        // 将"poster"改为"_"，则不添加前缀，直接把user对象属性复制到JSON对象下
+        'poster' => 'user.*',
+        // 对模型中comments数组的每一个对象的mobile属性值，传递给指定handler处理后返回
+        // Handler可指定多个
+        'comments.*' => ['user.mobile', MobileHandler::class]
+    ];
+
+    protected $hidden = [
+        "tags",
+        "comments.*.user.vip",
+        "user",
+        "category"
+    ];
+
+// MobileHandler
+class MobileHandler
+{
+    // $value指定的属性值/或上一个handler返回值， $data为当前属性的对象数据，如上面的配置即为comment的user数据
+    public function handle($value, $data)
+    {
+        return '';
+    }
+}
+```
+
+#### 使用
+
+直接在控制器中返回
+```php
+return new InfoMapper($article);
+```
+
 
 
 ## Model扩展

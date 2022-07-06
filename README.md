@@ -435,7 +435,7 @@ class InfoMapper extends BaseResponseMapper
 }
 ```
 
-### Mapper配置
+#### Mapper配置
 
 > mapper属性配置字段映射
 > hidden属性配置字段隐藏

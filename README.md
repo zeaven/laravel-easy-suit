@@ -1,4 +1,6 @@
 # Laravel Easy Suit
+[![OSCS Status](https://www.oscs1024.com/platform/badge/zeaven/laravel-easy-suit.svg?size=small)](https://www.oscs1024.com/project/zeaven/laravel-easy-suit?ref=badge_small)
+
 这是一个为了方便使用Laravel框架开发api而提供的简单封装套件。
 
 

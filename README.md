@@ -477,9 +477,11 @@ $article = [
 
 对应的mapper配置：
 ```php
+class InfoMapper extends BaseResponseMapper
+{
     protected $mapper = [
         // 将模型中category对象的name属性，转换为JSON数据的category_name字段
-        "category_name": "category.name"
+        'category_name': 'category.name'
         // 将模型中user对象的所有性情展开到JSON对象下，并添加"poster_"前缀
         // 将"poster"改为"_"，则不添加前缀，直接把user对象属性复制到JSON对象下
         'poster' => 'user.*',
@@ -494,6 +496,7 @@ $article = [
         "user",
         "category"
     ];
+}
 
 // MobileHandler
 class MobileHandler

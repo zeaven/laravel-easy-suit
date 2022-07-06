@@ -11,9 +11,9 @@ use Symfony\Component\Finder\Finder;
  * App\Http\Requests\AdminRequest
  * $request->fields(['parameter1'=>['default'=>'123','rule'=>'required|integer','as'=>'alias','type'=>'int'],'parameter2'=>12,'paramter3'])
  * 或在AdminRequest的rule属性进行配置后
- * $request->params(null|false) => 返回参数value数组
- * $request->params(true) => 返回参数key/value数组
- * $request->params(['a','b']) => 返回指定key的参数key/value数组
+ * $request->params(true) => 返回参数value数组
+ * $request->params(null|false) => 返回参数key/value数组
+ * $request->params(['a','b']) => 返回指定key的参数value数组
  * $request->params(OtherClass) => 将参数key/value数组传入OtherClass构造函数，并返回OtherClass实例
 */
 
@@ -50,9 +50,9 @@ class RequestExtensionProvider extends ServiceProvider
                 $requestExtend = new RequestExtension($this);
                 $result = $requestExtend->values();
                 if (blank($param_class) || $param_class === false) {
-                    return array_values($result);
-                } elseif ($param_class === true) {
                     return $result;
+                } elseif ($param_class === true) {
+                    return array_values($result);
                 } elseif (is_array($param_class)) {
                     $res = [];
                     foreach ($param_class as $value) {

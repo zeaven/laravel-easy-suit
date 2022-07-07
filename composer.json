@@ -3,7 +3,7 @@
     "description": "easy setup package",
     "type": "library",
     "require": {
-        "php": ">^8.0.2",
+        "php": "^8.0.2",
         "hidehalo/nanoid-php": "^1.1",
         "tymon/jwt-auth": "dev-develop",
         "meilisearch/meilisearch-php": "^0.23.2"

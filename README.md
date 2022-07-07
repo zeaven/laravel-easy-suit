@@ -102,11 +102,18 @@ Request对象提供两个方法获取参数：params和values，*注意：未配
 ```php
 [$username, $password] = $request->values();
 // 或
-[$username] = $request->params(['username']);
+[$username] = $request->values(['username']);
 // 或
-[$password, $username] = $request->params(['password', 'username']);
-// 或
+[$password, $username] = $request->values(['password', 'username']);
+
+// 获取key/value数组
 $params = $request->params();
+// $params = ['username' => 'xxx', 'password' => 'xxx']
+// 或
+$params = $request->params(['username']);
+// 或
+// $params = ['username' => 'xxx']
+$params = $request->params(['username', 'password']);
 // $params = ['username' => 'xxx', 'password' => 'xxx']
 ```
 

@@ -82,7 +82,7 @@ class GlobalResponse
         $fields = config('easy_suit.global_response.fields', []);
         $response = [];
         foreach ($fields as $key => $value) {
-            if (!$value || !isset($result[$key])) {
+            if (!$value || !array_key_exists($key, $result)) {
                 continue;
             }
             $response[$value] = $result[$key];

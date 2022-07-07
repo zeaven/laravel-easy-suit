@@ -46,29 +46,29 @@ class RequestExtensionProvider extends ServiceProvider
 
         Request::macro(
             'params',
-            function ($param_class = null) {
+            function ($keys = null) {
                 $requestExtend = new RequestExtension($this);
                 $result = $requestExtend->values();
-                if (blank($param_class) || $param_class === false) {
-                    return $result;
-                } elseif ($param_class === true) {
-                    return array_values($result);
-                } elseif (is_array($param_class)) {
+                if (is_array($keys)) {
                     $res = [];
-                    foreach ($param_class as $value) {
-                        $res[] = isset($result[$value]) ? $result[$value] : null;
+                    foreach ($keys as $value) {
+                        if (array_key_exists($value, $result)) {
+                            $res[$value] = $result[$value] ?? null;
+                        }
                     }
                     return $res;
-                } elseif (class_exists($param_class)) {
-                    return new $param_class($result);
+                } elseif (class_exists($keys)) {
+                    return new $keys($result);
+                } else {
+                    return $result;
                 }
             }
         );
 
         Request::macro(
             'values',
-            function () {
-                return $this->params(false);
+            function ($keys = null) {
+                return array_values($this->params($keys));
             }
         );
 

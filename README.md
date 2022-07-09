@@ -46,6 +46,12 @@
 composer require zeaven/laravel-easy-suit
 ```
 
+### 发布
+
+```bash
+php artisan vendor:publish --provider=Zeaven\EasySuit\ServiceProvider
+````
+
 
 
 ## Postman 代码生成器

@@ -49,19 +49,21 @@ class RequestExtensionProvider extends ServiceProvider
             function ($keys = null) {
                 $requestExtend = new RequestExtension($this);
                 $result = $requestExtend->values();
-                if (is_array($keys)) {
-                    $res = [];
-                    foreach ($keys as $value) {
-                        if (array_key_exists($value, $result)) {
-                            $res[$value] = $result[$value] ?? null;
+                if ($keys !== null) {
+                    if (is_array($keys)) {
+                        $res = [];
+                        foreach ($keys as $value) {
+                            if (array_key_exists($value, $result)) {
+                                $res[$value] = $result[$value] ?? null;
+                            }
                         }
+                        return $res;
+                    } elseif (class_exists($keys)) {
+                        return new $keys($result);
                     }
-                    return $res;
-                } elseif (class_exists($keys)) {
-                    return new $keys($result);
-                } else {
-                    return $result;
                 }
+
+                return $result;
             }
         );
 

@@ -42,6 +42,10 @@
 
 ## 安装
 
+```bash
+composer require zeaven/laravel-easy-suit
+```
+
 
 
 ## Postman 代码生成器

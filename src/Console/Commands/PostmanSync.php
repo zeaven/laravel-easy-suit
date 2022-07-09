@@ -151,7 +151,7 @@ class PostmanSync extends Command
         $api = $this->parseController($method, $url, $query, $urlPaths);
         $ctrl = $api['ctrl'];
         ['path' => $path, 'content' => $ctrl_stub, 'logic_path' => $logic_path, 'logic_content' => $logic_stub] = $this->createController($ctrl);
-        $request = $this->createRequest($api['action'], $ctrl, $api['query']);
+        $request_name = $this->createRequest($api['action'], $ctrl, $api['query']);
         $method_desc = $request['description'] ?? '';
         [$ctrl_text, $func_stub, $logic_text] = $this->createFunction(
             $name,
@@ -161,8 +161,11 @@ class PostmanSync extends Command
             $api['query'],
             $api['params'],
             $method_desc,
-            class_basename($request)
+            class_basename($request_name)
         );
+        if ($ctrl_text && $request_name) {
+            $ctrl_text = $this->useRequestForCtrl($ctrl_text, $request_name);
+        }
         $this->addMapperRoute($api, $url, $method, $name);
         if ($ctrl_text !== false) {
             $this->addMapperFunc($ctrl, $func_stub);
@@ -299,9 +302,10 @@ class PostmanSync extends Command
     protected function createRequest(string $method, string $ctrl, array $query): string
     {
         if (count($query) === 0) {
-            return preg_match('/Admin\//', $ctrl) ?
-                'Admin' :
-                'Api';
+            return '';
+            // return preg_match('/Admin\//', $ctrl) ?
+            //     'Admin':
+            //     'Api';
         }
         $ctrl = collect(explode('/', $ctrl))->unique()->implode('/');
         // 生成Request
@@ -361,12 +365,12 @@ class PostmanSync extends Command
         // 判断方法是否存在
         if (preg_match("/\s{$action}\s*\(/", $ctrl_stub)) {
             $this->comment("请求方法[{$action}]已存在");
-            return [false, null];
+            return [false, '', ''];
         }
         // 查找方法勾子
         if (!preg_match('/\/\*\* \#generate function\#[^\*]+\*\//', $ctrl_stub, $match)) {
             $this->error("请求方法[{$action}]生成失败，#generate function#不存在");
-            return [false, null];
+            return [false, '', ''];
         }
         $hook = $match[0];
         $request .= 'Request';
@@ -386,13 +390,14 @@ class PostmanSync extends Command
         if (count($query)) {
             $query = array_column($query, 'key');
             // $args = "\$param = \$request->params();  // params方法传入对应的Param对象" . PHP_EOL;
-            $args = '// 请求传入的参数值，要获取key/value参数数组请使用 $param = $request->params();' . PHP_EOL;
-            $args .= "\t\t" . '[$' . implode(', $', $query) . '] = ' . (count($query) > 6 ? PHP_EOL : '');
-            $args .= (count($query) > 6 ? "\t\t\t" : '') . "\$request->values();";
+            $args = '$params = $request->params();' . PHP_EOL;
+            $args .= "\t\t/* " . '[$' . implode(', $', $query) . '] = ' . (count($query) > 6 ? PHP_EOL : '');
+            $args .= (count($query) > 6 ? "\t\t\t" : '') . "\$request->values(); */";
         } else {
             $args = '';
         }
         $func_stub = str_replace('{{query}}', $args, $func_stub);
+        $func_stub = str_replace('{{args}}', $args ? '$params' : '', $func_stub);
 
         $ctrl_stub = str_replace($hook, $func_stub, $ctrl_stub);
 
@@ -401,17 +406,34 @@ class PostmanSync extends Command
         return [$ctrl_stub, $func_stub, $logic_stub];
     }
 
+    protected function useRequestForCtrl(string $ctrl_stub, string $request)
+    {
+        $request = str_replace('/', '\\', 'App/Http/Requests/' . $request . 'Request');
+        if (false !== strpos($ctrl_stub, $request)) {
+            return $ctrl_stub;
+        }
+
+        if (preg_match("/use\sRequest;/", $ctrl_stub, $match)) {
+            $hook = $match[0];
+
+            $use_stub = "use {$request};" . PHP_EOL . $hook;
+            $ctrl_stub = str_replace($hook, $use_stub, $ctrl_stub);
+        }
+
+        return $ctrl_stub;
+    }
+
     protected function createLogicFunction(string $name, string $logic_stub, string $action, string $description)
     {
         // 判断方法是否存在
         if (preg_match("/\s{$action}\s*\(/", $logic_stub)) {
             $this->comment("请求方法[{$action}]已存在");
-            return [false, null];
+            return;
         }
         // 查找方法勾子
         if (!preg_match('/\/\*\* \#generate function\#[^\*]+\*\//', $logic_stub, $match)) {
             $this->error("请求方法[{$action}]生成失败，#generate function#不存在");
-            return [false, null];
+            return;
         }
         $hook = $match[0];
         $func_stub = file_get_contents(__DIR__ . '/stubs/logic_func.stub');

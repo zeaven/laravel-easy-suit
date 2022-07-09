@@ -2,10 +2,10 @@
 
 namespace {{namespace}};
 
-use App\Http\Requests\{{BaseRequest}};
+use Zeaven\EasySuit\Http\Requests\BaseRequest;
 
 {{comment}}
-class {{class}} extends {{BaseRequest}}
+class {{class}} extends BaseRequest
 {
     /**
      * 返回参数验证规则.

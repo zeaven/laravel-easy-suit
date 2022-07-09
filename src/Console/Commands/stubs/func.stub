@@ -7,7 +7,7 @@
     public function {{action}}({{request}} $request{{params}})
     {
         {{query}}
-        $result = $this->logic->{{action}}();
+        $result = $this->logic->{{action}}({{args}});
 
         return ok($result);
     }

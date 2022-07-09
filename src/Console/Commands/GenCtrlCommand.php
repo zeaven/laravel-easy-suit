@@ -53,9 +53,9 @@ class GenCtrlCommand extends BaseGeneratorCommand
         $logic_namespace = 'use App\\Logics\\' . $logic_name . 'Logic;';
         $is_admin_ctrl = preg_match('/Admin\\\\/', $logic_name);
         if ($is_admin_ctrl) {
-            $request = 'use App\Http\Requests\AdminRequest;';
+            $request = 'use Request;';
         } else {
-            $request = 'use App\Http\Requests\ApiRequest;';
+            $request = 'use Request;';
         }
 
         $stub = str_replace('{{logic_namespace}}', $logic_namespace, $stub);

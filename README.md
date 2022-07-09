@@ -68,6 +68,36 @@ postman接口定义如下:
 
 路由配置自动添加，但是中间件需要自行配置
 
+同时需要修改RouteServiceProvider.php的路由代码如下：
+
+```php
+    public function boot()
+    {
+        $this->configureRateLimiting();
+
+        $this->routes(function () {
+            Route::configRoute('api', 'api');
+            Route::configRoute('web');
+        });
+    }
+```
+
+你也可以按照configRoute方法的写法定义路由：
+
+```php
+    Route::macro(
+        'configRoute',
+        function (string $name, string $prefix = '/', array $middleware = []) {
+            $namespace = "App\\Http\\Controllers\\" . ucfirst($name);
+            Route::prefix($prefix)
+                ->middleware(empty($middleware) ? $name : $middleware)
+                ->namespace($namespace)
+                ->domain(config('app.url'))
+                ->group(base_path("routes/{$name}.php"));
+        }
+    );
+```
+
 
 
 ## Request封装

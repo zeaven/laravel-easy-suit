@@ -74,10 +74,12 @@ class Handler extends ExceptionHandler
             $response['message'] = 'Invalid access address';
         } elseif ($e instanceof AuthenticationException) {
             $response['code'] = 401;
-            $response['message'] = __(401);
+            $response['message'] = __('error_code.401');
         } elseif ($e instanceof QueryException) {
             $response['code'] = 500;
-            $response['message'] = __(500);
+            $response['message'] = __('error_code.401');
+        } else {
+            $response['message'] = __('error_code.' . $errorCode);
         }
 
         return ok($response);

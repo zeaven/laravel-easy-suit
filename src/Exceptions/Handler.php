@@ -78,8 +78,8 @@ class Handler extends ExceptionHandler
         } elseif ($e instanceof QueryException) {
             $response['code'] = 500;
             $response['message'] = __('error_code.401');
-        } else {
-            $response['message'] = __('error_code.' . $errorCode);
+        } elseif (is_numeric($errorCode) && $errorCode > 1000) {
+            $response['message'] = __('error_code.' . dechex($errorCode));
         }
 
         return ok($response);

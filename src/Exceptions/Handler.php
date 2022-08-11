@@ -4,7 +4,7 @@ namespace Zeaven\EasySuit\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\QueryException;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -38,19 +38,21 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
+        parent::reportable(function (Throwable $e) {
             // 自定义异常报告，如sentry
         });
 
-        $this->renderable(fn (Throwable $e, $request) => $this->customRender($e, $request));
+        parent::renderable(fn (Throwable $e, $request) => $this->customRender($e, $request));
     }
 
     private function customRender(Throwable $e, $request)
     {
-
+        if ($request->attributes->get('_global_response') !== true) {
+            return;
+        }
         if ($request->method() === 'GET' && $request->headers->get('content-type') !== 'application/json') {
             // 页面请求不做处理
-            return null;
+            return;
         }
 
         if (method_exists($e, 'getErrorCode')) {

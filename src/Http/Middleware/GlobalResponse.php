@@ -22,10 +22,12 @@ class GlobalResponse
         if ($except_routes = config('easy_suit.global_response.exclude')) {
             foreach ($except_routes as $except_route) {
                 if ($request->is($except_route)) {
+                    $request->attributes->set('_global_response', false);
                     return $next($request);
                 }
             }
         }
+        $request->attributes->set('_global_response', true);
         $response = $next($request);
 
         $enable_debugbar = (app()->bound('debugbar') && app('debugbar')->isEnabled()) ? ['_debugbar' => app('debugbar')->getData()] : [];

@@ -73,7 +73,7 @@ class Handler extends ExceptionHandler
         if ($e instanceof ValidationException) {
             $response['message'] = head($e->errors())[0];
         } elseif ($e instanceof NotFoundHttpException) {
-            $response['message'] = 'Invalid access address';
+            $response['message'] = __('error_code.404');
         } elseif ($e instanceof AuthenticationException) {
             $response['code'] = 401;
             $response['message'] = __('error_code.401');

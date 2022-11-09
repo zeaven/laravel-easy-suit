@@ -2,9 +2,9 @@
 
 namespace Zeaven\EasySuit\Exceptions;
 
+use App\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\QueryException;
-use App\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -47,19 +47,23 @@ class Handler extends ExceptionHandler
 
     private function customRender(Throwable $e, $request)
     {
-        if ($request->attributes->get('_global_response') === false) {
+        $_global_response = $request->attributes->get('_global_response');
+        $matchGlobal = false;
+        if ($_global_response === false) {
             return;
         }
-        $_global_response = false;
-        if ($include_routes = config('easy_suit.global_response.include', [])) {
-            foreach ($include_routes as $include_route) {
-                if ($request->is($include_route)) {
-                    $_global_response = true;
-                    break;
+        if ($_global_response === null) {
+            if ($include_routes = config('easy_suit.global_response.include', [])) {
+                foreach ($include_routes as $include_route) {
+                    if ($request->is($include_route)) {
+                        $matchGlobal = true;
+                        break;
+                    }
                 }
             }
         }
-        if (!$_global_response) {
+
+        if (!$_global_response && !$matchGlobal) {
             return;
         }
 
@@ -76,7 +80,7 @@ class Handler extends ExceptionHandler
             $errorCode = $e->getCode() ?: 500;
         }
 
-        $response = [
+        $result = [
             'code' => $errorCode,
             'data' => null,
             'message' => $e->getMessage(),
@@ -84,19 +88,32 @@ class Handler extends ExceptionHandler
         ];
 
         if ($e instanceof ValidationException) {
-            $response['message'] = head($e->errors())[0];
+            $result['message'] = head($e->errors())[0];
         } elseif ($e instanceof NotFoundHttpException) {
-            $response['message'] = __('error_code.404');
+            $result['message'] = __('error_code.404');
         } elseif ($e instanceof AuthenticationException) {
-            $response['code'] = 401;
-            $response['message'] = __('error_code.401');
+            $result['code'] = 401;
+            $result['message'] = __('error_code.401');
         } elseif ($e instanceof QueryException) {
-            $response['code'] = 500;
-            $response['message'] = __('error_code.401');
+            $result['code'] = 500;
+            $result['message'] = __('error_code.401');
         } elseif (is_numeric($errorCode) && $errorCode > 1000) {
-            $response['message'] = __('error_code.' . dechex($errorCode));
+            $result['message'] = __('error_code.' . dechex($errorCode));
         }
 
-        return ok($response);
+        if (!$_global_response && $matchGlobal) {
+            $fields = config('easy_suit.global_response.fields', []);
+            $response = [];
+            foreach ($fields as $key => $value) {
+                if (!$value || !array_key_exists($key, $result)) {
+                    continue;
+                }
+                $response[$value] = $result[$key];
+            }
+
+            return $response;
+        } else {
+            return ok($result);
+        }
     }
 }

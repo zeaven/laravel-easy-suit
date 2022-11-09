@@ -111,7 +111,7 @@ class Handler extends ExceptionHandler
                 $response[$value] = $result[$key];
             }
 
-            return $response;
+            return ok($response);
         } else {
             return ok($result);
         }

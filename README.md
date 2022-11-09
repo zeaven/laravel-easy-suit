@@ -49,7 +49,7 @@ composer require zeaven/laravel-easy-suit
 ### 发布
 
 ```bash
-php artisan vendor:publish --provider=Zeaven\EasySuit\ServiceProvider
+php artisan vendor:publish --provider=Zeaven\\EasySuit\\ServiceProvider
 ````
 
 

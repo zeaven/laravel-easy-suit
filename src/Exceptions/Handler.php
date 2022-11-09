@@ -47,9 +47,22 @@ class Handler extends ExceptionHandler
 
     private function customRender(Throwable $e, $request)
     {
-        if ($request->attributes->get('_global_response') !== true) {
+        if ($request->attributes->get('_global_response') === false) {
             return;
         }
+        $_global_response = false;
+        if ($include_routes = config('easy_suit.global_response.include', [])) {
+            foreach ($include_routes as $include_route) {
+                if ($request->is($include_route)) {
+                    $_global_response = true;
+                    break;
+                }
+            }
+        }
+        if (!$_global_response) {
+            return;
+        }
+
         if ($request->method() === 'GET' && $request->headers->get('content-type') !== 'application/json') {
             // 页面请求不做处理
             return;

@@ -23,6 +23,7 @@ return [
             'message' => 'msg',
             'error' => 'error'
         ],
+        'include' => ['api/*'],
         'exclude' => [
             'horizon/*',
             'laravel-websockets/*',

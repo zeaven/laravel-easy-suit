@@ -163,7 +163,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        if ($this->model === $this->authenticate) {
+        if ($this->model === $this->authModel) {
             return parent::retrieveByCredentials($credentials);
         }
         // 切换到验证模型，即Account表

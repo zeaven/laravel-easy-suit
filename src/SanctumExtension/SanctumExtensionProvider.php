@@ -2,12 +2,15 @@
 
 namespace Zeaven\EasySuit\SanctumExtension;
 
-use Zeaven\EasySuit\SanctumExtension\Listeners\TokenAuthenticatedListener;
-use Zeaven\EasySuit\SanctumExtension\Middleware\TokenRefreshAuthenticate;
 use App\Http\Middleware\Authenticate;
 use Event;
+use Illuminate\Auth\RequestGuard;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Events\TokenAuthenticated;
+use Zeaven\EasySuit\SanctumExtension\CacheGuard;
+use Zeaven\EasySuit\SanctumExtension\Listeners\TokenAuthenticatedListener;
+use Zeaven\EasySuit\SanctumExtension\Middleware\TokenRefreshAuthenticate;
 
 class SanctumExtensionProvider extends ServiceProvider
 {
@@ -42,5 +45,38 @@ class SanctumExtensionProvider extends ServiceProvider
                 [TokenAuthenticatedListener::class, 'handle']
             );
         }
+        $this->configureGuard();
+    }
+
+    /**
+     * Configure the Sanctum authentication guard.
+     *
+     * @return void
+     */
+    protected function configureGuard()
+    {
+        Auth::resolved(function ($auth) {
+            $auth->extend('sanctum', function ($app, $name, array $config) use ($auth) {
+                return tap($this->createGuard($auth, $config), function ($guard) {
+                    app()->refresh('request', $guard, 'setRequest');
+                });
+            });
+        });
+    }
+
+    /**
+     * Register the guard.
+     *
+     * @param  \Illuminate\Contracts\Auth\Factory  $auth
+     * @param  array  $config
+     * @return RequestGuard
+     */
+    protected function createGuard($auth, $config)
+    {
+        return new RequestGuard(
+            new CacheGuard($auth, config('sanctum.expiration'), $config['provider']),
+            request(),
+            $auth->createUserProvider($config['provider'] ?? null)
+        );
     }
 }

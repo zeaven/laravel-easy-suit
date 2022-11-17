@@ -87,8 +87,8 @@ class ServiceProvider extends BaseServiceProvider
             function ($app, array $config) {
                 // 返回 Illuminate\Contracts\Auth\UserProvider 实例...
                 $model = $config['model'];
-                $fields = $config['fields'];
-                $authModel = $config['auth_model'];
+                $fields = $config['fields'] ?? null;
+                $authModel = $config['auth_model'] ?? $config['model'];
 
                 return $app->make(CacheEloquentUserProvider::class, compact('model', 'authModel', 'fields'));
             }

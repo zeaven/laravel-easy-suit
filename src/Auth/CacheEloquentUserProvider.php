@@ -45,7 +45,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
         parent::__construct($hasher, $model);
 
         // 初始化子类定义的成员数据
-        $this->fields = $fields;
+        $this->fields = $fields ?? [];
         $this->authModel = $authModel;
     }
 
@@ -102,7 +102,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
                 $model = $this->createModel();
                 $user = $this->newModelQuery($model)
                     ->where($model->getAuthIdentifierName(), $identifier)
-                    ->select($this->fields)
+                    ->selectWhen($this->fields)
                     ->first();
 
                 throw_empty($user, 0xf00012);
@@ -145,7 +145,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
             $identifier,
             function () use ($identifier, $token) {
                 $acc = parent::retrieveByToken($identifier, $token);
-                $user = $acc->member()->select($this->fields)->first();
+                $user = $acc->member()->selectWhen($this->fields)->first();
                 throw_empty($user, 0xf00012);
                 // throw_on($user->status === -1, 0xf00242);
                 // $user->setHidden(['gender_text', 'password']);
@@ -163,29 +163,36 @@ class CacheEloquentUserProvider extends EloquentUserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
+        if ($this->model === $this->authenticate) {
+            return parent::retrieveByCredentials($credentials);
+        }
         // 切换到验证模型，即Account表
-        $bak_model = $this->model;
+        $userModel = $this->model;
         $this->model = $this->authModel;
-        $model = throw_empty(parent::retrieveByCredentials($credentials), 0xf00012);
+        $authData = throw_empty(parent::retrieveByCredentials($credentials), 0xf00012);
 
         // 切换回来
-        $this->model = $bak_model;
+        $this->model = $userModel;
         $key = $this->createModel()->getAuthIdentifierName();
         // 账户对应实体表(user, admin)
         $relation = strtolower(class_basename($this->model));
-        $fields = implode(',', $this->fields);
-        $model->load("{$relation}:{$fields}");
+        if (empty($this->fields)) {
+            $authData->load($relation);
+        } else {
+            $fields = implode(',', $this->fields);
+            $authData->load("{$relation}:{$fields}");
+        }
 
-        static::refresh($model->{$relation}->{$key});
-        throw_empty(method_exists($model, $relation), 0xf00012); // 账号不存在对应实体
+        static::refresh($authData->{$relation}->{$key});
+        throw_empty(method_exists($authData, $relation), 0xf00012); // 账号不存在对应实体
 
         // $model->$relation = $this->retrieveById($model->{$relation}->{$key});
         // throw_on(!empty($model->$relation->disabled_at), 0xf00242);
         // 提供 实体 模型验证密码功能
-        $model->$relation->password = $model->password;
+        $authData->$relation->password = $authData->password;
         // $model->$relation->setHidden(['gender_text', 'password']);
 
-        return $model->$relation;
+        return $authData->$relation;
     }
 
     public function getFields(): array

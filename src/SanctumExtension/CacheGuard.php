@@ -27,7 +27,7 @@ class CacheGuard extends Guard
             $accessToken = $model::findToken($token);
 
             $userProvider = $this->getUserProvider();
-            if ($userProvider) {
+            if ($userProvider && accessToken != null) {
                 $accessToken->setRelation('tokenable', $userProvider->retrieveById($accessToken->tokenable_id));
             }
 

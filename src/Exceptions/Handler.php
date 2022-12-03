@@ -8,6 +8,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
+use Str;
 
 class Handler extends ExceptionHandler
 {

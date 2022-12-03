@@ -51,6 +51,16 @@ class ServiceProvider extends BaseServiceProvider
         $this->configStrable();
 
         $this->configRoute();
+
+        if ($this->app->isLocal() && class_exists(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class)) {
+            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+        }
+        if (!$this->app->isProduction() && class_exists(\Barryvdh\Debugbar\ServiceProvider::class)) {
+            $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
+        }
+
+        //修复json系列化小数点溢出
+        ini_set('serialize_precision', 14);
     }
 
     private function configException()

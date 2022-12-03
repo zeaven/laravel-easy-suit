@@ -40,7 +40,7 @@ class GlobalResponse
             $data = $this->wrapResponse($response->getData(true), $code);
             $sqlSlow && $data['sql'] = '检查到sql慢查询';
             $response->setData($data + $enable_debugbar);
-        } elseif (Str::contains($response->headers->get('content-type'), 'application/json')) {
+        } elseif (Str::contains($response->headers->get('content-type'), 'json')) {
             $data = json_decode($response->getContent(), true) ?? null;
             $data = $this->wrapResponse($data, $code);
             $sqlSlow && $data['sql'] = '检查到sql慢查询';

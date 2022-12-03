@@ -68,7 +68,7 @@ class Handler extends ExceptionHandler
             return;
         }
 
-        if ($request->method() === 'GET' && Str::contains($request->headers->get('content-type'), 'application/json')) {
+        if ($request->method() === 'GET' && !Str::contains($request->headers->get('content-type'), 'json')) {
             // 页面请求不做处理
             return;
         }

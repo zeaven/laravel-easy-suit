@@ -105,10 +105,10 @@ class CacheEloquentUserProvider extends EloquentUserProvider
                     ->selectWhen($this->fields)
                     ->first();
 
-                throw_empty($user, 0xf00012);
+                // throw_empty($user, 0xf00012);
                 // throw_on($user->status === -1, 0xf00242);
                 // $user->setHidden(['gender_text', 'password']);
-                return $user->toArray();
+                return $user?->toArray();
             }
         );
 
@@ -121,8 +121,11 @@ class CacheEloquentUserProvider extends EloquentUserProvider
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    protected function createCacheModel(array $attributes)
+    protected function createCacheModel(?array $attributes)
     {
+        if (empty($attributes)) {
+            return;
+        }
         $model = $this->createModel();
         $model->fill($attributes);
         $model->id = $attributes['id'];
@@ -146,10 +149,10 @@ class CacheEloquentUserProvider extends EloquentUserProvider
             function () use ($identifier, $token) {
                 $acc = parent::retrieveByToken($identifier, $token);
                 $user = $acc->member()->selectWhen($this->fields)->first();
-                throw_empty($user, 0xf00012);
+                // throw_empty($user, 0xf00012);
                 // throw_on($user->status === -1, 0xf00242);
                 // $user->setHidden(['gender_text', 'password']);
-                return $user->toArray();
+                return $user?->toArray();
             }
         );
 

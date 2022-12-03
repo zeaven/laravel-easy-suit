@@ -59,7 +59,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
     private function cache(string $key, callable $callback)
     {
         return cache()->tags(['auth'])->remember(
-            class_basename(__CLASS__) . ':' . $key,
+            class_basename($this->authModel) . ':' . $key,
             static::CACHE_SECOND,
             $callback
         );
@@ -73,7 +73,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
      */
     public static function refresh(string $key)
     {
-        return cache()->tags(['auth'])->forget(class_basename(__CLASS__) . ':' . $key);
+        return cache()->tags(['auth'])->forget(class_basename($this->authModel) . ':' . $key);
     }
 
     /**
@@ -84,7 +84,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
      */
     private function has(string $key): bool
     {
-        return cache()->tags(['auth'])->has(class_basename(__CLASS__) . ':' . $key);
+        return cache()->tags(['auth'])->has(class_basename($this->authModel) . ':' . $key);
     }
 
     /**

@@ -3,9 +3,11 @@
 namespace Zeaven\EasySuit\SanctumExtension;
 
 use Arr;
+use Str;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\Events\TokenAuthenticated;
 use Laravel\Sanctum\Guard;
+use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Sanctum\TransientToken;
 
@@ -26,9 +28,8 @@ class CacheGuard extends Guard
 
             $accessToken = $model::findToken($token);
 
-            $userProvider = $this->getUserProvider();
-            if ($userProvider && $accessToken != null) {
-                $accessToken->setRelation('tokenable', $userProvider->retrieveById($accessToken->tokenable_id));
+            if ($accessToken != null) {
+                $accessToken->setRelation('tokenable', $this->getUser($accessToken));
             }
 
             if (
@@ -63,12 +64,27 @@ class CacheGuard extends Guard
         }
     }
 
-    protected function getUserProvider()
+    protected function getUser(PersonalAccessToken $accessToken)
     {
-        $guard = Arr::first(config('sanctum.guard', []), null, $this->auth->getDefaultDriver());
 
-        $guardConfig = config('auth.guards.' . $guard);
+        $authConfig = config('auth');
 
-        return $this->auth->createUserProvider($guardConfig['provider']);
+        foreach (Arr::wrap(config('sanctum.guard', ['web'])) as $guard) {
+            $guardConfig = Arr::get($authConfig, 'guards.' . $guard);
+            $providerConfig = Arr::get($authConfig, 'providers.' . $guardConfig['provider']);
+            if ($providerConfig) {
+                $model = $providerConfig['model'];
+
+                if (Str::contains($model, $accessToken->tokenable_type)) {
+                    $provider = $this->auth->createUserProvider($guardConfig['provider']);
+                    $user = $provider->retrieveById($accessToken->tokenable_id);
+                    if ($user) {
+                        return $user;
+                    }
+                }
+            }
+        }
+
+        return $accessToken->tokenable;
     }
 }

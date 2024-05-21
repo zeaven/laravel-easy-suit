@@ -30,7 +30,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
 
     // 字段数组、账户模型
     protected array $fields = [];
-    protected $authModel;
+    protected static $authModel;
 
     /**
      * CustomEloquentUserProvider constructor.
@@ -46,7 +46,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
 
         // 初始化子类定义的成员数据
         $this->fields = $fields ?? [];
-        $this->authModel = $authModel;
+        static::$authModel = $authModel;
     }
 
     /**
@@ -56,10 +56,10 @@ class CacheEloquentUserProvider extends EloquentUserProvider
      * @return mixed
      * @throws \Exception
      */
-    private function cache(string $key, callable $callback)
+    private static function cache(string $key, callable $callback)
     {
         return cache()->tags(['auth'])->remember(
-            class_basename($this->authModel) . ':' . $key,
+            class_basename(static:$authModel) . ':' . $key,
             static::CACHE_SECOND,
             $callback
         );
@@ -73,7 +73,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
      */
     public static function refresh(string $key)
     {
-        return cache()->tags(['auth'])->forget(class_basename($this->authModel) . ':' . $key);
+        return cache()->tags(['auth'])->forget(class_basename(static::$authModel) . ':' . $key);
     }
 
     /**
@@ -84,7 +84,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
      */
     private function has(string $key): bool
     {
-        return cache()->tags(['auth'])->has(class_basename($this->authModel) . ':' . $key);
+        return cache()->tags(['auth'])->has(class_basename(static::$authModel) . ':' . $key);
     }
 
     /**
@@ -166,12 +166,12 @@ class CacheEloquentUserProvider extends EloquentUserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        if ($this->model === $this->authModel) {
+        if ($this->model === static::$authModel) {
             return parent::retrieveByCredentials($credentials);
         }
         // 切换到验证模型，即Account表
         $userModel = $this->model;
-        $this->model = $this->authModel;
+        $this->model = static::$authModel;
         $authData = throw_empty(parent::retrieveByCredentials($credentials), 0xf00012);
 
         // 切换回来

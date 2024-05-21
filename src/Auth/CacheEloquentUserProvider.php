@@ -59,7 +59,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
     private static function cache(string $key, callable $callback)
     {
         return cache()->tags(['auth'])->remember(
-            class_basename(static:$authModel) . ':' . $key,
+            class_basename(static::$authModel) . ':' . $key,
             static::CACHE_SECOND,
             $callback
         );

@@ -327,7 +327,7 @@ throw_on($user->status === -1, '异常信息', 0x000001);
 ```php
     use Zeaven\EasySuit\Annotations\AnnoLog; // 必须引用注解命名空间
 
-    #[AnnoLog(type:1, tpl:"{mobile},{type}审核提现,订单号{order_no},签名{sign}")]
+    #[AnnoLog(tpl:"{mobile},审核提现,订单号{order_no},签名{sign}")]
     public function index(TestRequest $request)
     {
         // 设置日志模板变量

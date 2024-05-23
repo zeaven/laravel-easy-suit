@@ -5,25 +5,25 @@ use Zeaven\EasySuit\Exceptions\Exception;
 
 //成功返回json格式数据
 if (!function_exists('ok')) {
-    function ok($result = null, array $headers = [])
+    function ok($list = null, array $headers = [])
     {
-        if (blank($result)) {
-        } elseif ($result instanceof Symfony\Component\HttpFoundation\Response) {
-            return $result;
-        } elseif (is_a($result, Illuminate\Support\Collection::class)) {
-            $result = compact('result');
-        } elseif (is_array($result)) {
-            array_key_exists(0, $result) && $result = compact('result');
-        } elseif ($result instanceof App\Commons\Http\ResponseMappers\BaseResponseMapper) {
-            if ($result->isArray()) {
-                $result = [
-                    'result' => $result->toArray()
+        if (blank($list)) {
+        } elseif ($list instanceof Symfony\Component\HttpFoundation\Response) {
+            return $list;
+        } elseif (is_a($list, Illuminate\Support\Collection::class)) {
+            $list = compact('list');
+        } elseif (is_array($list)) {
+            array_key_exists(0, $list) && $list = compact('list');
+        } elseif ($list instanceof Zeaven\EasySuit\Http\ResponseMappers\BaseResponseMapper) {
+            if ($list->isArray()) {
+                $list = [
+                    'list' => $list->toArray()
                 ];
             }
-        } elseif (!is_object($result)) {
-            $result = compact('result');
+        } elseif (!is_object($list)) {
+            $list = compact('list');
         }
-        return response()->json($result)->withHeaders($headers);
+        return response()->json($list)->withHeaders($headers);
     }
 }
 

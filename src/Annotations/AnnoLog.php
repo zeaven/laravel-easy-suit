@@ -19,20 +19,9 @@ use Str;
 #[Attribute(Attribute::TARGET_METHOD)]
 class AnnoLog
 {
-    /**
-     * @Required()
-     * 1管理员，2投资者用户，3居间商，4系统生成
-     * @var int
-     */
-    // private int $type;
-    /**
-     * @Required()
-     *
-     * @var string
-     */
-    // private string $tpl;
 
-    public function __construct(private int $type, private string $tpl)
+
+    public function __construct(private string $tpl, private array $variables)
     {
     }
 
@@ -42,8 +31,8 @@ class AnnoLog
         if (auth()->user()) {
             $user = auth()->user()->toArray();
         }
-        $variables = request()->attributes->get('$anno_log', []) + $user;
-        $log = Str::replaceMatch($this->tpl, $variables);
+        $data = request()->attributes->get('$anno_log', []) + $user + $this->variables;
+        $log = Str::replaceMatch($this->tpl, $data);
         return [
             'type' => $this->type,
             'log' => $log,

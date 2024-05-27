@@ -21,7 +21,9 @@ if (!function_exists('ok')) {
                 ];
             }
         } elseif (!is_object($list)) {
-            $list = compact('list');
+            $list = [
+                'result' => $list
+            ];
         }
         return response()->json($list)->withHeaders($headers);
     }

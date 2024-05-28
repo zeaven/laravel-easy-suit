@@ -39,9 +39,7 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        parent::reportable(function (Throwable $e) {
-            // 自定义异常报告，如sentry
-        });
+        parent::register();
 
         parent::renderable(fn (Throwable $e, $request) => $this->customRender($e, $request));
     }

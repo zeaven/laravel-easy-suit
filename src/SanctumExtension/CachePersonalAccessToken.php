@@ -15,7 +15,7 @@ class CachePersonalAccessToken extends PersonalAccessToken
 
         [$id, $token] = explode('|', $token, 2);
 
-        $instance = cache()->tags(['auth'])->remeber('CachePersonalAccessToken:'.$id, static::CACHE_SECOND, function () use ($id) {
+        $instance = cache()->tags(['auth'])->remember('CachePersonalAccessToken:'.$id, static::CACHE_SECOND, function () use ($id) {
           return static::find($id);
         });
         if ($instance) {

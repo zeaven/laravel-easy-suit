@@ -7,7 +7,7 @@ return [
     'auth' => [
         'sanctum' => [
             'enable' => true,
-            // 'token_model' => '',
+            'token_model' => \Zeaven\EasySuit\SanctumExtension\CachePersonalAccessToken::class,
         ],
         'jwt' => [
             'enable' => true,

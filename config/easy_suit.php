@@ -5,7 +5,10 @@ return [
         'token' => env('POSTMAN_API_TOKEN'),
     ],
     'auth' => [
-        'sanctum' => true,
+        'sanctum' => [
+            'enable' => true,
+            // 'token_model' => '',
+        ],
         'jwt' => [
             'enable' => true,
             'guard' => 'jwt'

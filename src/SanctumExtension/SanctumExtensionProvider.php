@@ -49,6 +49,8 @@ class SanctumExtensionProvider extends ServiceProvider
         }
         if ($cfg['token_model'] && class_exists($cfg['token_model'])) {
             Sanctum::usePersonalAccessTokenModel($cfg['token_model']);
+        } else {
+            Sanctum::usePersonalAccessTokenModel();
         }
         $this->configureGuard();
     }

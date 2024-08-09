@@ -47,7 +47,7 @@ class SanctumExtensionProvider extends ServiceProvider
                 [TokenAuthenticatedListener::class, 'handle']
             );
         }
-        if ($cfg['token_model'] && class_exists($cfg['token_model'])) {
+        if ($cfg !== true && ($cfg['token_model'] && class_exists($cfg['token_model']))) {
             Sanctum::usePersonalAccessTokenModel($cfg['token_model']);
         } else {
             Sanctum::usePersonalAccessTokenModel();

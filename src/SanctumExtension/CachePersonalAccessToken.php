@@ -5,6 +5,8 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class CachePersonalAccessToken extends PersonalAccessToken
 {
+  protected $table = 'personal_access_tokens';
+
   // 缓存Token时间
     const CACHE_SECOND = 3600;
     public static function findToken($token)

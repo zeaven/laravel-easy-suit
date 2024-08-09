@@ -2,15 +2,16 @@
 
 namespace Zeaven\EasySuit\SanctumExtension;
 
-use App\Http\Middleware\Authenticate;
 use Event;
+use Laravel\Sanctum\Sanctum;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\Authenticate;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Events\TokenAuthenticated;
 use Zeaven\EasySuit\SanctumExtension\CacheGuard;
-use Zeaven\EasySuit\SanctumExtension\Listeners\TokenAuthenticatedListener;
 use Zeaven\EasySuit\SanctumExtension\Middleware\TokenRefreshAuthenticate;
+use Zeaven\EasySuit\SanctumExtension\Listeners\TokenAuthenticatedListener;
 
 class SanctumExtensionProvider extends ServiceProvider
 {
@@ -39,11 +40,15 @@ class SanctumExtensionProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (config('easy_suit.auth.sanctum')) {
+        $cfg = config('easy_suit.auth.sanctum');
+        if ($cfg === true || $cfg['enable']) {
             Event::listen(
                 TokenAuthenticated::class,
                 [TokenAuthenticatedListener::class, 'handle']
             );
+        }
+        if ($cfg['token_model'] && class_exists($cfg['token_model'])) {
+            Sanctum::usePersonalAccessTokenModel($cfg['token_model']);
         }
         $this->configureGuard();
     }

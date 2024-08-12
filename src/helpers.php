@@ -151,8 +151,8 @@ if (!function_exists('size_convert')) {
 if (!function_exists('sentry')) {
     function sentry($msg, array $extra = [])
     {
-        if (!app()->bound('sentry') || App::environment('local')) {
-            Log::error(($msg instanceof \Exception) ? $msg->getMessage() : $msg, $extra);
+        if (!app()->bound('sentry') || \App::environment('local')) {
+            \Log::error(($msg instanceof \Exception) ? $msg->getMessage() : $msg, $extra);
         } else {
             $sentry = app('sentry');
             \Sentry\configureScope(
@@ -230,7 +230,7 @@ if (!function_exists('db_trans')) {
             $outerConn = array_pop($conns);
             foreach ($conns as $conn) {
                 $inner_closure = $closure;
-                $closure = function () use ($inner_closure) {
+                $closure = function () use ($conn, $inner_closure) {
                     return Illuminate\Support\Facades\DB::connection($conn)->transaction($inner_closure);
                 };
             }

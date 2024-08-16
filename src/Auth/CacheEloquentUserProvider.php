@@ -143,12 +143,24 @@ class CacheEloquentUserProvider extends EloquentUserProvider
      */
     public function retrieveByToken($identifier, $token)
     {
-        throw_e('暂不支持记住我的');
         $user = $this->cache(
             $identifier,
             function () use ($identifier, $token) {
-                $acc = parent::retrieveByToken($identifier, $token);
-                $user = $acc->member()->selectWhen($this->fields)->first();
+
+                $model = $this->createModel();
+                $user = $this->newModelQuery($model)
+                    ->where($model->getAuthIdentifierName(), $identifier)
+                    ->selectWhen($this->fields)
+                    ->first();
+
+                if (filled($user) && $this->model !== static::$authModel) {
+                    $relation = strtolower(class_basename(static::$authModel));
+                    $user->load($relation);
+                    $authData = $user->{$relation};
+                    $rememberToken = $authData->getRememberToken();
+
+                    return $rememberToken && hash_equals($rememberToken, $token) ? $user : null;
+                }
                 // throw_empty($user, 0xf00012);
                 // throw_on($user->status === -1, 0xf00242);
                 // $user->setHidden(['gender_text', 'password']);

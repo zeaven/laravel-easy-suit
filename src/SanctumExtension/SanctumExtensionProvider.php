@@ -41,6 +41,9 @@ class SanctumExtensionProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (!class_exists(Sanctum::class)) {
+            return;
+        }
         $cfg = config('easy_suit.auth.sanctum');
         $defCfg = ['enable' => true, 'token_model' => CachePersonalAccessToken::class];
         if ($cfg === true) {

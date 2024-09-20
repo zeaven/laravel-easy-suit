@@ -2,13 +2,14 @@
 
 namespace Zeaven\EasySuit\Exceptions;
 
-use App\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Database\QueryException;
-use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Throwable;
 use Str;
+use Throwable;
+use Illuminate\Database\QueryException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
+use App\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -32,24 +33,13 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    /**
-     * Register the exception handling callbacks for the application.
-     *
-     * @return void
-     */
-    public function register(): void
-    {
-        parent::register();
 
-        parent::renderable(fn (Throwable $e, $request) => $this->customRender($e, $request));
-    }
-
-    private function customRender(Throwable $e, $request)
+    public function render($request, Throwable $e): Response
     {
         $_global_response = $request->attributes->get('_global_response');
         $matchGlobal = false;
         if ($_global_response === false) {
-            return;
+            return ok($e->getMessage());
         }
         if ($_global_response === null) {
             if ($include_routes = config('easy_suit.global_response.include', [])) {
@@ -61,15 +51,14 @@ class Handler extends ExceptionHandler
                 }
             }
         }
-
         if (!$_global_response && !$matchGlobal) {
-            return;
+            return ok($e->getMessage());
         }
 
-        if ($request->method() === 'GET' && !Str::contains($request->headers->get('content-type'), 'json')) {
-            // 页面请求不做处理
-            return;
-        }
+        // if ($request->method() === 'GET' && !Str::contains($request->headers->get('content-type'), 'json')) {
+        //     // 页面请求不做处理
+        //     return ok('');
+        // }
 
         if (method_exists($e, 'getErrorCode')) {
             $errorCode = $e->getErrorCode();

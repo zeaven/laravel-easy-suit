@@ -39,7 +39,7 @@ class Handler extends ExceptionHandler
         $_global_response = $request->attributes->get('_global_response');
         $matchGlobal = false;
         if ($_global_response === false) {
-            return ok($e->getMessage());
+            return parent::render($request, $e);
         }
         if ($_global_response === null) {
             if ($include_routes = config('easy_suit.global_response.include', [])) {
@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
             }
         }
         if (!$_global_response && !$matchGlobal) {
-            return ok($e->getMessage());
+            return parent::render($request, $e);
         }
 
         // if ($request->method() === 'GET' && !Str::contains($request->headers->get('content-type'), 'json')) {

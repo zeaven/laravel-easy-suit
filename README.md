@@ -639,7 +639,7 @@ A::whereWhen($options)->get();
 ```php
 $a = 1;
 $col1 = 'xxx';
-A::whenFilled($a, $col1, function($q, $a, $col1) => {
+A::filledWhen($a, $col1, function($q, $a, $col1) => {
     $q->where('col1', $col1)->where('col2', $a);
 })->get();
 ```

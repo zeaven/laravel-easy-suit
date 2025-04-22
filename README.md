@@ -632,14 +632,14 @@ $options = ['col1' => 1, 'col2' => 'xxx'];
 A::whereWhen($options)->get();
 ```
 
-#### whenFilled
+#### filledWhen
 
 当给定参数有值时，执行回调
 
 ```php
 $a = 1;
 $col1 = 'xxx';
-A::whenFilled($a, $col1, function($q, $a, $col1) => {
+A::filledWhen($a, $col1, function($q, $a, $col1) => {
     $q->where('col1', $col1)->where('col2', $a);
 })->get();
 ```

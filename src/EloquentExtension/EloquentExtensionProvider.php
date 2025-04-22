@@ -118,7 +118,7 @@ class EloquentExtensionProvider extends ServiceProvider
         });
 
 
-        Builder::macro('whenFilled', function () {
+        Builder::macro('filledWhen', function () {
             $filleds = func_get_args();
             $callback = array_pop($filleds);
             $is_filled = !empty(array_filter($filleds, fn ($item) => filled($item)));

@@ -180,6 +180,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
     {
         if ($this->model === static::$authModel) {
             $user_model = parent::retrieveByCredentials($credentials);
+            throw_empty($user_model, 0xf00012); 
             $key = $this->createModel()->getAuthIdentifierName();
             static::refresh($user_model->{$key});
             return $user_model;
@@ -202,7 +203,7 @@ class CacheEloquentUserProvider extends EloquentUserProvider
         }
 
         static::refresh($authData->{$relation}->{$key});
-        throw_empty(method_exists($authData, $relation), 0xf00012); // 账号不存在对应实体
+        throw_on(!method_exists($authData, $relation), 0xf00012); // 账号不存在对应实体
 
         // $model->$relation = $this->retrieveById($model->{$relation}->{$key});
         // throw_on(!empty($model->$relation->disabled_at), 0xf00242);

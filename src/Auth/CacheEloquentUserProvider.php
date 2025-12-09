@@ -180,9 +180,10 @@ class CacheEloquentUserProvider extends EloquentUserProvider
     {
         if ($this->model === static::$authModel) {
             $user_model = parent::retrieveByCredentials($credentials);
-            throw_empty($user_model, 0xf00012); 
-            $key = $this->createModel()->getAuthIdentifierName();
-            static::refresh($user_model->{$key});
+            if ($user_model) {
+                $key = $this->createModel()->getAuthIdentifierName();
+                static::refresh($user_model->{$key});
+            }
             return $user_model;
         }
         // 切换到验证模型，即Account表

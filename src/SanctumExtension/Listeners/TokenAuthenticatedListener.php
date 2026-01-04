@@ -2,6 +2,7 @@
 
 namespace Zeaven\EasySuit\SanctumExtension\Listeners;
 
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\Events\TokenAuthenticated;
 
 class TokenAuthenticatedListener
@@ -14,7 +15,7 @@ class TokenAuthenticatedListener
      */
     public function handle(TokenAuthenticated $event)
     {
-        $userProvider = auth()->guard()->getProvider();
+        $userProvider = Auth::getProvider();
         if (method_exists($userProvider, 'getFields')) {
             $fields = $userProvider->getFields();
             $user = $event->token->tokenable;

@@ -3,11 +3,12 @@
 namespace Zeaven\EasySuit\SanctumExtension\Middleware;
 
 use Closure;
-use DB;
-use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Support\Facades\DB;
+use Laravel\Sanctum\TransientToken;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\PersonalAccessToken;
-use Laravel\Sanctum\TransientToken;
+use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Support\Facades\Auth;
 
 class TokenRefreshAuthenticate extends Authenticate
 {
@@ -52,10 +53,11 @@ class TokenRefreshAuthenticate extends Authenticate
         }
 
         foreach ($guards as $guard) {
-            if ($this->auth->guard($guard)->check()) {
-                $this->auth->shouldUse($guard);
-                $newAccessToken = $this->refreshToken($this->auth->user());
+            $guardInstance = $this->auth->guard($guard);
 
+            if ($guardInstance->check()) {
+                $this->auth->shouldUse($guard);
+                $newAccessToken = $this->refreshToken($guardInstance->user());
                 return $newAccessToken;
             }
         }
@@ -63,7 +65,7 @@ class TokenRefreshAuthenticate extends Authenticate
         $this->unauthenticated($request, $guards);
     }
 
-    private function refreshToken(Model $user)
+    private function refreshToken($user)
     {
         $currentAccessToken = $user->currentAccessToken();
         if ($currentAccessToken instanceof TransientToken) {
@@ -87,7 +89,7 @@ class TokenRefreshAuthenticate extends Authenticate
                         // 过期刷新
                         return DB::transaction(function () use ($currentAccessToken, $removeToken) {
                             $newAccessToken = $currentAccessToken->tokenable->createToken($currentAccessToken->name, $currentAccessToken->abilities);
-                            auth()->guard(config('sanctum.guard')[0])->login($currentAccessToken->tokenable);
+                            Auth::guard(config('sanctum.guard')[0])->login($currentAccessToken->tokenable);
                             $removeToken && $currentAccessToken->delete();     // 自行判断是否删除
 
                             return $newAccessToken;

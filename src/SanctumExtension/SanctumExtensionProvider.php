@@ -2,11 +2,11 @@
 
 namespace Zeaven\EasySuit\SanctumExtension;
 
-use Event;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\Authenticate;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Events\TokenAuthenticated;
 use Zeaven\EasySuit\SanctumExtension\CacheGuard;
@@ -91,7 +91,7 @@ class SanctumExtensionProvider extends ServiceProvider
         return new RequestGuard(
             new CacheGuard($auth, config('sanctum.expiration'), $config['provider']),
             request(),
-            $auth->createUserProvider($config['provider'] ?? null)
+            Auth::createUserProvider($config['provider'] ?? null)
         );
     }
 }

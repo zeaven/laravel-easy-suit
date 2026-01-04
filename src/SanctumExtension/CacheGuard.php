@@ -2,14 +2,15 @@
 
 namespace Zeaven\EasySuit\SanctumExtension;
 
-use Arr;
-use Str;
-use Illuminate\Http\Request;
-use Laravel\Sanctum\Events\TokenAuthenticated;
 use Laravel\Sanctum\Guard;
-use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Sanctum\TransientToken;
+use Laravel\Sanctum\PersonalAccessToken;
+use Laravel\Sanctum\Events\TokenAuthenticated;
 
 class CacheGuard extends Guard
 {
@@ -76,7 +77,7 @@ class CacheGuard extends Guard
                 $model = $providerConfig['model'];
 
                 if (Str::contains($model, $accessToken->tokenable_type)) {
-                    $provider = $this->auth->createUserProvider($guardConfig['provider']);
+                    $provider = Auth::createUserProvider($guardConfig['provider']);
                     $user = $provider->retrieveById($accessToken->tokenable_id);
                     if ($user) {
                         return $user;

@@ -3,10 +3,10 @@
 namespace Zeaven\EasySuit\Annotations;
 
 // use Doctrine\Common\Annotations\AnnotationReader;
-use ReflectionMethod;
-use Arr;
 use Attribute;
-use Str;
+use ReflectionMethod;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * 用户日志注解
@@ -21,20 +21,20 @@ class AnnoLog
 {
 
 
-    public function __construct(private string $tpl, private array $variables)
+    public function __construct(private string $tpl, private array $variables = [])
     {
     }
 
     public function toArray()
     {
         $user = [];
-        if (auth()->user()) {
-            $user = auth()->user()->toArray();
+        if (Auth::user()) {
+            $user = Auth::user()?->toArray();
         }
         $data = request()->attributes->get('$anno_log', []) + $user + $this->variables;
         $log = Str::replaceMatch($this->tpl, $data);
         return [
-            'type' => $this->type,
+            // 'type' => $this->type,
             'log' => $log,
         ];
     }

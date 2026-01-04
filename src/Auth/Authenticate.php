@@ -2,10 +2,10 @@
 
 namespace Zeaven\EasySuit\Auth;
 
-use App\Http\Middleware\Authenticate as Middleware;
-use Arr;
 use Closure;
+use Illuminate\Support\Arr;
 use Zeaven\EasySuit\Jwt\AutoRefreshJwtAuth;
+use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Zeaven\EasySuit\SanctumExtension\Middleware\TokenRefreshAuthenticate;
 
 class Authenticate extends Middleware

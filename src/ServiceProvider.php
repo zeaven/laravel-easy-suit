@@ -2,17 +2,16 @@
 
 namespace Zeaven\EasySuit;
 
-use App\Exceptions\Handler;
-use App\Http\Middleware\Authenticate;
-use Auth;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
-use Str;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\Finder\Finder;
-use Zeaven\EasySuit\Auth\Authenticate as EasySuitAuthenticate;
+use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Support\Facades\Route;
 use Zeaven\EasySuit\Auth\CacheEloquentUserProvider;
 use Zeaven\EasySuit\Exceptions\Handler as EasySuitHandler;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Zeaven\EasySuit\Auth\Authenticate as EasySuitAuthenticate;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -52,11 +51,11 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->configRoute();
 
-        if ($this->app->isLocal() && class_exists(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class)) {
-            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+        if ($this->app->environment('local') && class_exists('\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider')) {
+            $this->app->register('\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider');
         }
-        if (!$this->app->isProduction() && class_exists(\Barryvdh\Debugbar\ServiceProvider::class)) {
-            $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
+        if (!$this->app->environment('production') && class_exists('\Barryvdh\Debugbar\ServiceProvider')) {
+            $this->app->register('\Barryvdh\Debugbar\ServiceProvider');
         }
 
         //修复json系列化小数点溢出
@@ -65,7 +64,7 @@ class ServiceProvider extends BaseServiceProvider
 
     private function configException()
     {
-        $this->app->bind(Handler::class, EasySuitHandler::class);
+        $this->app->bind(\Illuminate\Foundation\Exceptions\Handler::class, EasySuitHandler::class);
     }
 
     private function loadCommands()

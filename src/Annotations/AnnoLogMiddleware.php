@@ -2,15 +2,16 @@
 
 namespace Zeaven\EasySuit\Annotations;
 
-use App;
-use Zeaven\EasySuit\Annotations\AnnoLog;
-use Arr;
 use Browser;
 use Closure;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Response;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Zeaven\EasySuit\Annotations\AnnoLog;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AnnoLogMiddleware
 {
@@ -30,7 +31,7 @@ class AnnoLogMiddleware
             return;
         }
         $route = request()->route();
-        $user = auth()->user() ?? [];
+        $user = Auth::user() ?? [];
 
         $data = [];
         $data['status'] = $response instanceof Response ? $response->getStatusCode() : $response->status();

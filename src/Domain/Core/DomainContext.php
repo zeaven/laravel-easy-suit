@@ -9,8 +9,9 @@
 
 namespace Zeaven\EasySuit\Domain\Core;
 
-use Zeaven\EasySuit\Domain\Core\DomainService;
+use Illuminate\Support\Facades\Auth;
 use Zeaven\EasySuit\Domain\Core\Model;
+use Zeaven\EasySuit\Domain\Core\DomainService;
 
 abstract class DomainContext
 {
@@ -86,7 +87,7 @@ abstract class DomainContext
             return $this->contextUser;
         }
         if ($uid) {
-            $guard = auth()->getDefaultDriver();
+            $guard = Auth::getDefaultDriver();
             $provider = config("auth.guards.{$guard}.provider");
             $model = config("auth.providers.{$provider}.model");
             $this->contextUser = (new $model())->whereUid($uid)->first();
@@ -94,6 +95,6 @@ abstract class DomainContext
         if ($this->contextUser) {
             return $this->contextUser;
         }
-        return $this->contextUser = auth()->user();
+        return $this->contextUser = Auth::user();
     }
 }

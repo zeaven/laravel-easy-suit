@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Zeaven\EasySuit\Annotations\AnnoLog;
 use Zeaven\EasySuit\Exceptions\Exception;
 
@@ -158,9 +159,9 @@ if (!function_exists('sentry')) {
             \Sentry\configureScope(
                 function (\Sentry\State\Scope $scope) use ($extra): void {
                     // Add user context
-                    if (auth()->check()) {
+                    if (Auth::check()) {
                         $scope->setUser(
-                            auth()->user()->toArray()
+                            Auth::user()->toArray()
                         );
                     }
                     foreach ($extra as $key => $value) {

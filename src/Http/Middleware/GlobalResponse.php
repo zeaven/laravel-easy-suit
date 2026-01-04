@@ -3,10 +3,11 @@
 namespace Zeaven\EasySuit\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Str;
-use ErrorCode;
-use Arr;
+use Illuminate\Http\JsonResponse;
+use Zeaven\EasySuit\ErrorCode\Facade as ErrorCode;
 
 class GlobalResponse
 {
@@ -59,7 +60,7 @@ class GlobalResponse
         $result['message'] = null;
 
         if (
-            ($data instanceof ArrayAccess || is_array($data))
+            ($data instanceof \ArrayAccess || is_array($data))
             && Arr::has($data, ['code', 'data', 'message'])
         ) {
             if ($data['code'] !== 0) {
@@ -97,11 +98,11 @@ class GlobalResponse
     {
         if (blank($data)) {
             return null;
-        } elseif ($data instanceof ArrayAccess || is_array($data)) {
+        } elseif ($data instanceof \ArrayAccess || is_array($data)) {
             foreach ($data as $key => $value) {
                 if (blank($value)) {
                     $data[$key] = null;
-                } elseif ($value instanceof ArrayAccess || is_array($data)) {
+                } elseif ($value instanceof \ArrayAccess || is_array($data)) {
                     $data[$key] = $this->emptyToNull($value);
                 }
             }
@@ -120,12 +121,20 @@ class GlobalResponse
         $statements = data_get($debugbar, '_debugbar.queries.statements', []);
 
         foreach ($statements as &$state) {
-            unset($state['backtrace']);
+            // unset($state['backtrace']);
+            unset($state['xdebug_link']);
             if ($state['duration'] >= 0.5) {
                 $slow = true;
             }
         }
         data_set($debugbar, '_debugbar.queries.statements', $statements);
+
+        $models = data_get($debugbar, '_debugbar.models.data', []);
+
+        foreach ($models as &$model) {
+            unset($model['xdebug_link']);
+        }
+        data_set($debugbar, '_debugbar.models.data', $models);
 
         return [$debugbar, $slow];
     }

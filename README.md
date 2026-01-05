@@ -1,8 +1,13 @@
 # Laravel Easy Suit
+
 [![OSCS Status](https://www.oscs1024.com/platform/badge/zeaven/laravel-easy-suit.svg?size=small)](https://www.oscs1024.com/project/zeaven/laravel-easy-suit?ref=badge_small)
 
 这是一个为了方便使用Laravel框架开发api而提供的简单封装套件。集合了参数验证、统一返回格式、错误码定义、Sanctum和JWT、日志、代码生成。
 
+| Laravel版本   | 对应版本   |
+| ----------- | ------ |
+| Laravel 11+ | 2.0.0+ |
+| Laravel 8+  | 1.0.0+ |
 
 - [Laravel Easy Suit](#laravel-easy-suit)
   * [安装](#安装)
@@ -39,7 +44,6 @@
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-
 ## 安装
 
 ```bash
@@ -50,9 +54,7 @@ composer require zeaven/laravel-easy-suit
 
 ```bash
 php artisan vendor:publish --provider=Zeaven\\EasySuit\\ServiceProvider
-````
-
-
+```
 
 ## Postman 代码生成器
 
@@ -78,42 +80,33 @@ postman接口定义如下:
 
 路由配置自动添加，但是中间件需要自行配置
 
-同时需要修改RouteServiceProvider.php的路由代码如下：
+同时需要修改bootstrap/app.php的路由代码如下：
 
 ```php
-    public function boot()
-    {
-        $this->configureRateLimiting();
-
-        $this->routes(function () {
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        // api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+        then: function () {
             Route::configRoute('api', 'api');
-            Route::configRoute('web');
-        });
-    }
+        },
+    )
 ```
 
 你也可以按照configRoute方法的写法定义路由：
 
 ```php
-    Route::macro(
-        'configRoute',
-        function (string $name, string $prefix = '/', array $middleware = []) {
-            $namespace = "App\\Http\\Controllers\\" . ucfirst($name);
-            Route::prefix($prefix)
-                ->middleware(empty($middleware) ? $name : $middleware)
-                ->namespace($namespace)
-                ->domain(config('app.url'))
-                ->group(base_path("routes/{$name}.php"));
-        }
-    );
+    Route::middleware('api')
+                ->prefix('api')
+                ->name('api.')
+                ->namespace("App\\Http\\Controllers\\Api")
+                ->group(base_path('routes/api.php'));
 ```
-
-
 
 ## Request封装
 
 BaseRequest继承于FormRequest，增加一个rule方法配置参数规则。
-
 
 ### 定义Request对象
 
@@ -159,10 +152,10 @@ $params = $request->params(['username', 'password']);
 // $params = ['username' => 'xxx', 'password' => 'xxx']
 ```
 
-
 ### Request对象参数配置
 
 rule方法返回参数的配置，完整配置字段如下：
+
 ```php
 [
     'username' => [
@@ -181,25 +174,20 @@ rule方法返回参数的配置，完整配置字段如下：
 > 3. type 参数类型，可选值有：int、float、bool、array(json)、date、ip、url、split(将字符串转以逗号分割成数组)；
 > 4. as 别名，使用values()方法返回的key值；
 
-
-
 ## 全局返回统一格式
 
 在使用前需要先添加路由中间件：
 
 ```php
-    protected $middlewareGroups = [
-        'web' => [
-        ],
-
-        'api' => [
-            \Zeaven\EasySuit\Http\Middleware\GlobalResponse::class,
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'throttle:api',
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ],
-    ];
-
+    ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->api(append:[
+                'throttle:api'
+            ],
+            prepend: [
+                \Zeaven\EasySuit\Http\Middleware\GlobalResponse::class,
+                \Zeaven\EasySuit\Annotations\AnnoLogMiddleware::class,
+            ]);
+    }
 ```
 
 在easy_suit.php配置文件中有如下默认配置:
@@ -228,8 +216,6 @@ rule方法返回参数的配置，完整配置字段如下：
 > exclude 可定义排除的路由
 
 在控制器中 调用ok()全局方法，返回即可。
-
-
 
 ## 错误码和异常抛出
 
@@ -287,27 +273,21 @@ throw_on($user->status === -1, '异常信息', 0x000001);
 
 所有异常抛出方法的最后一个参数可以传入一个数组，用于本地化参数替换，[替换翻译字符串中的参数](https://learnku.com/docs/laravel/9.x/localization/12232#replacing-parameters-in-translation-strings)
 
-
-
 ## 注解日志
 
 注解日志采用控制器方法添加注解的方式实现，在使用前需要先添加路由中间件：
 
 ```php
-    protected $middlewareGroups = [
-        'web' => [
-        ],
-
-        'api' => [
-            \Zeaven\EasySuit\Annotations\AnnoLogMiddleware::class,
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'throttle:api',
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ],
-    ];
-
+    ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->api(append:[
+                'throttle:api'
+            ],
+            prepend: [
+                \Zeaven\EasySuit\Http\Middleware\GlobalResponse::class,
+                \Zeaven\EasySuit\Annotations\AnnoLogMiddleware::class,
+            ]);
+    }
 ```
-
 
 日志默认使用laravel的日志服务，你可以在easy_suit.php配置文件中修改自定义的处理程序，以及是否开启日志
 
@@ -342,18 +322,17 @@ throw_on($user->status === -1, '异常信息', 0x000001);
 
 在用户登录状态下，登录用户模型的缓存字段信息将自动添加到模板变量，可直接使用，如：
 
--   uid
--   mobile
--   username
--   nickname
-
-
+- uid
+- mobile
+- username
+- nickname
 
 ## 用户认证
 
 ### 配置
 
 在easy_suit.php文件中
+
 ```php
     'auth' => [
         'sanctum' => true,
@@ -363,7 +342,6 @@ throw_on($user->status === -1, '异常信息', 0x000001);
         ],
     ],
 ```
-
 
 ### 自动刷新Token
 
@@ -381,11 +359,9 @@ $axios.onResponse((response) => {
     }
     return Promise.resolve(response.data)
   })
-````
-
+```
 
  **注：自动刷新token必须在客户端请求中添加Authorization请求头**
-
 
 ### Sanctum认证
 
@@ -393,7 +369,6 @@ $axios.onResponse((response) => {
 
 同时为Sanctum认证增加自动刷新token功能，具体配置项如下；
 
-> 
 > ```php
 >     'expiration' => 20160,  // 两周过期时间
 >     'refresh_ttl' => 60,    // 一个小时刷新一次token
@@ -405,10 +380,10 @@ $axios.onResponse((response) => {
 > 即两周内有访问，token有效期就可以一直往后延
 > 每次刷新后，原来的token也可以选择是否需要删除
 
-
 ### 使用Sanctum认证
 
 在路由配置中添加auth中间件
+
 ```php
 Route::middleware('auth:sanctum')->group(function () {
     // 你的路由
@@ -424,6 +399,7 @@ Route::middleware('auth:sanctum')->group(function () {
 #### 安装JWT第三方包
 
 Laravel 9.x 不支持 tymon/jwt-auth 包，但可以指定开发版
+
 ```php
 composer require "tymon/jwt-auth:dev-develop"
 ```
@@ -431,6 +407,7 @@ composer require "tymon/jwt-auth:dev-develop"
 #### 配置JWT
 
 按照tymon/jwt-auth配置，在auth.config添加jwt的守卫配置后
+
 ```php
     'guards' => [
         'web' => [
@@ -442,22 +419,19 @@ composer require "tymon/jwt-auth:dev-develop"
             'provider' => 'users',
         ]
     ],
-
 ```
 
 在easy_suit.php配置文件中，也把auth.jwt.guard改成你添加的守卫名称，这里都是"jwt"
 
-
 ### 使用JWT认证
 
 在路由配置中添加auth中间件
+
 ```php
 Route::middleware('auth:jwt')->group(function () {
     // 你的路由
 });
 ```
-
-
 
 ## ResponseMapper 资源映射
 
@@ -490,6 +464,7 @@ class InfoMapper extends BaseResponseMapper
 > hidden属性配置字段隐藏
 
 假定当前数据模型如下：
+
 ```php
 $article = [
     'title' => 'xxx',
@@ -504,10 +479,10 @@ $article = [
     'category' => ['name' => 'xxx']
     'user' => ['username' => '作者', 'vip' => 'x']
 ];
-
 ```
 
 希望返回的JSON格式如下：
+
 ```json
 {
     "title": "xxx",
@@ -525,6 +500,7 @@ $article = [
 ```
 
 对应的mapper配置：
+
 ```php
 class InfoMapper extends BaseResponseMapper
 {
@@ -561,11 +537,10 @@ class MobileHandler
 #### 使用
 
 直接在控制器中返回
+
 ```php
 return new InfoMapper($article);
 ```
-
-
 
 ## Model扩展
 
@@ -577,7 +552,6 @@ return new InfoMapper($article);
         'simple_pagination' => true,
         'extension' => true
     ]
-
 ```
 
 ### 开启分页简化
@@ -655,7 +629,6 @@ A::betweenWhen('col1', 1)->get();
 
 A::betweenWhen('col1', null, 10)->get();
 // select * from a where col1 <= 10
-
 ```
 
 #### likeWhen

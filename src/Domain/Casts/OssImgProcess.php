@@ -45,7 +45,7 @@ class OssImgProcess extends CdnUrl
     protected function crop(Model $model, string $url)
     {
         if (!$model->avatar_location || !isset($model->avatar_location['top'])) {
-            return $value;
+            return $url;
         }
         ['top' => $y, 'right' => $right, 'bottom' => $bottom, 'left' => $x] = $model->avatar_location ?? [];
         $x = intval($x);

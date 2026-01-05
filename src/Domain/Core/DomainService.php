@@ -20,17 +20,23 @@ abstract class DomainService
 
     public function __construct()
     {
-        $key = defined('static::CONFIG') ? static::CONFIG : '';
-        if ($key) {
-            $this->config = config('common.domain.' . $key);
+        // 1) 读取配置
+        if (defined('static::CONFIG') && static::CONFIG !== '') {
+            $this->config = config('common.domain.' . static::CONFIG);
         }
-        $ctx = defined('static::CONTEXT') ? static::CONTEXT : '';
-        if ($ctx) {
+
+        // 2) 初始化上下文
+        if (defined('static::CONTEXT') && static::CONTEXT !== '') {
+            $ctx = static::CONTEXT;
             $this->ctx = new $ctx();
         }
+
+        // 3) 初始化回调
         if (method_exists($this, 'initialize')) {
             $this->initialize();
         }
+
+        // 4) 仅执行一次 booted()
         if (!isset(static::$booteds[static::class])) {
             static::$booteds[static::class] = true;
             static::booted();

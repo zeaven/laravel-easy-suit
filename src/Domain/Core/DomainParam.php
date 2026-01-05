@@ -75,7 +75,7 @@ abstract class DomainParam implements
      * @param  mixed  $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         if (property_exists($this, $offset)) {
             return ! is_null($this->{$offset});
@@ -90,7 +90,7 @@ abstract class DomainParam implements
      * @param  mixed  $offset
      * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         if (property_exists($this, $offset)) {
             return $this->{$offset};
@@ -105,7 +105,7 @@ abstract class DomainParam implements
      * @param  mixed  $value
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (property_exists($this, $offset)) {
             $this->{$offset} = $value;
@@ -120,7 +120,7 @@ abstract class DomainParam implements
      * @param  mixed  $offset
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         if (property_exists($this, $offset)) {
             $this->{$offset} = null;
@@ -162,7 +162,7 @@ abstract class DomainParam implements
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }

@@ -10,10 +10,11 @@ namespace Zeaven\EasySuit\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Crypt;
 
 /**
  * 使用
- * middleware => ['api.sign:1']
+ * middleware => ['api.sign']
  */
 class ApiSignature
 {
@@ -30,21 +31,17 @@ class ApiSignature
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next, bool $strict = false)
+    public function handle($request, Closure $next)
     {
         $query_array = $request->all();
-        if (!$strict) {
-            // 参数没有product、version的不处理
-            return $next($request);
-        }
-
 
         $signature = throw_empty(Arr::pull($query_array, 'signature'), '无效的签名');
         ksort($query_array);
         $query_str = collect($query_array)->map(function ($value, $key) {
             return $key . $value;
         })->implode('');
-        $encrypt_data = base64_to_safe(zw_encrypt($query_str));
+        // 加密方式必须是前后端一致
+        $encrypt_data = base64_to_safe(Crypt::encryptString($query_str));
 
         throw_on($encrypt_data !== $signature, '接口签名失败');
 

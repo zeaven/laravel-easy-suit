@@ -275,15 +275,12 @@ throw_on($user->status === -1, '异常信息', 0x000001);
 
 ## 注解日志
 
-注解日志采用控制器方法添加注解的方式实现，在使用前需要先添加路由中间件：
+注解日志采用控制器方法添加注解的方式实现，默认api中间件组自动添加 ，如果其他路由需要，请在使用前需要先添加路由中间件：
 
 ```php
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->api(append:[
-                'throttle:api'
-            ],
+        $middleware->web(
             prepend: [
-                \Zeaven\EasySuit\Http\Middleware\GlobalResponse::class,
                 \Zeaven\EasySuit\Annotations\AnnoLogMiddleware::class,
             ]);
     }

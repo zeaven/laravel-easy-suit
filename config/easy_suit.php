@@ -6,11 +6,11 @@ return [
     ],
     'auth' => [
         'sanctum' => [
-            'enable' => true,
+            'enable' => false,
             'token_model' => \Zeaven\EasySuit\SanctumExtension\CachePersonalAccessToken::class,
         ],
         'jwt' => [
-            'enable' => true,
+            'enable' => false,
             'guard' => 'jwt'
         ],
     ],

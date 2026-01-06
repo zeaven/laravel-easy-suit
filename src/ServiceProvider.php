@@ -30,6 +30,10 @@ class ServiceProvider extends BaseServiceProvider
         if ($this->app->runningInConsole()) {
             $this->loadCommands();
         }
+        // 确保在 Laravel 完成路由注册后执行
+        $this->app->booted(function () {
+            $this->registerApiMiddleware();
+        });
     }
 
     /**
@@ -162,5 +166,30 @@ class ServiceProvider extends BaseServiceProvider
                     ->group(base_path("routes/{$name}.php"));
             }
         );
+    }
+
+    protected function registerApiMiddleware(): void
+    {
+        $addMiddlewares = [];
+        if (config('easy_suit.crypt_json.enable') === true) {
+            $addMiddlewares[] = \Zeaven\EasySuit\Http\Middleware\CryptJsonTransport::class;
+            $this->app->bind(\Zeaven\EasySuit\Services\CryptJson::class, function () {
+                return new \Zeaven\EasySuit\Services\CryptJson(config('easy_suit.crypt_json.key'));
+            });
+        }
+        if (config('easy_suit.anno_log.enable') === true) {
+            $addMiddlewares[] = \Zeaven\EasySuit\Annotations\AnnoLogMiddleware::class;
+        }
+        // 获取当前的 api 中间件组
+        $apiMiddleware = Route::getMiddlewareGroups()['api'] ?? [];
+
+        // 避免重复添加
+        foreach ($addMiddlewares as $middlewareClass) {
+            if (!in_array($middlewareClass, $apiMiddleware, true)) {
+                $apiMiddleware[] = $middlewareClass;
+            }
+        }
+        // 重新注册 api 中间件组
+        Route::middlewareGroup('api', $apiMiddleware);
     }
 }

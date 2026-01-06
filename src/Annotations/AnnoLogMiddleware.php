@@ -23,8 +23,7 @@ class AnnoLogMiddleware
     public function terminate($request, $response)
     {
         if (
-            config('easy_suit.anno_log.enable') !== true
-            || $response instanceof StreamedResponse
+            $response instanceof StreamedResponse
             || $response instanceof BinaryFileResponse
             || App::runningInConsole()
         ) {

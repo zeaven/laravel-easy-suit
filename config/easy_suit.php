@@ -14,8 +14,12 @@ return [
             'guard' => 'jwt'
         ],
     ],
+    'crypt_json' => [
+        'enable' => env('EASY_SUIT_CRYPT_JSON', false),
+        'key' => env('CRYPT_JSON_KEY'),
+    ],
     'anno_log' => [
-        'enable' => env('EASY_SUIT_ANNO_LOG', true),
+        'enable' => env('EASY_SUIT_ANNO_LOG', false),
         'handler' => null
     ],
     // 全局返回格式

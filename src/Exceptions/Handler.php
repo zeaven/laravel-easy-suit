@@ -42,6 +42,14 @@ class Handler extends ExceptionHandler
             return parent::render($request, $e);
         }
         if ($_global_response === null) {
+            if ($except_routes = config('easy_suit.global_response.exclude')) {
+                foreach ($except_routes as $except_route) {
+                    if ($request->is($except_route)) {
+                        return parent::render($request, $e);
+                    }
+                }
+            }
+            
             if ($include_routes = config('easy_suit.global_response.include', [])) {
                 foreach ($include_routes as $include_route) {
                     if ($request->is($include_route)) {
@@ -51,6 +59,7 @@ class Handler extends ExceptionHandler
                 }
             }
         }
+        
         if (!$_global_response && !$matchGlobal) {
             return parent::render($request, $e);
         }

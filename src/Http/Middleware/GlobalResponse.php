@@ -20,16 +20,35 @@ class GlobalResponse
      */
     public function handle(Request $request, Closure $next)
     {
+        $matchGlobal = true;
         if ($except_routes = config('easy_suit.global_response.exclude')) {
             foreach ($except_routes as $except_route) {
                 if ($request->is($except_route)) {
-                    $request->attributes->set('_global_response', false);
-                    return $next($request);
+                    $matchGlobal = false;
+                    break;
                 }
             }
         }
-        $request->attributes->set('_global_response', true);
+        if ($matchGlobal === false) {
+            $request->attributes->set('_global_response', false);
+            return $next($request);
+        }
+        $matchGlobal = false;
+        if ($include_routes = config('easy_suit.global_response.include', [])) {
+            foreach ($include_routes as $include_route) {
+                if ($request->is($include_route)) {
+                    $matchGlobal = true;
+                    break;
+                }
+            }
+        }
+        if ($matchGlobal) {
+            $request->attributes->set('_global_response', true);
+        }
         $response = $next($request);
+     
+
+
 
         $enable_debugbar = (app()->bound('debugbar') && app('debugbar')->isEnabled()) ? ['_debugbar' => app('debugbar')->getData()] : [];
         [$enable_debugbar, $sqlSlow] = $this->filterDebugInfo($enable_debugbar);

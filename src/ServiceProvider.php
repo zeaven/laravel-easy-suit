@@ -58,8 +58,8 @@ class ServiceProvider extends BaseServiceProvider
         if ($this->app->environment('local') && class_exists('\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider')) {
             $this->app->register('\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider');
         }
-        if (!$this->app->environment('production') && class_exists('\Barryvdh\Debugbar\ServiceProvider')) {
-            $this->app->register('\Barryvdh\Debugbar\ServiceProvider');
+        if (!$this->app->environment('production') && class_exists('\Fruitcake\LaravelDebugbar\ServiceProvider')) {
+            $this->app->register('\Fruitcake\LaravelDebugbar\ServiceProvider');
         }
 
         //修复json系列化小数点溢出

@@ -123,7 +123,7 @@ class GlobalResponse
         foreach ($statements as &$state) {
             // unset($state['backtrace']);
             unset($state['xdebug_link']);
-            if ($state['duration'] >= 0.5) {
+            if (array_key_exists('duration', $state) && $state['duration'] >= 0.5) {
                 $slow = true;
             }
         }

@@ -17,6 +17,7 @@ class CacheGuard extends Guard
     public function __invoke(Request $request)
     {
         foreach (Arr::wrap(config('sanctum.guard', 'web')) as $guard) {
+            
             if ($user = $this->auth->guard($guard)->user()) {
                 return $this->supportsTokens($user)
                     ? $user->withAccessToken(new TransientToken())
@@ -32,7 +33,7 @@ class CacheGuard extends Guard
             if ($accessToken != null) {
                 $accessToken->setRelation('tokenable', $this->getUser($accessToken));
             }
-
+            
             if (
                 ! $this->isValidAccessToken($accessToken) ||
                 ! $this->supportsTokens($accessToken->tokenable)

@@ -14,7 +14,7 @@ class CryptJsonTransport
             $payload = $request->json()->all();
 
             if (isset($payload['cipher'])) {
-                $data = app(CryptJson::class)::decrypt($payload['cipher']);
+                $data = app(CryptJson::class)->decrypt($payload['cipher']);
                 $request->merge($data);
             }
         }

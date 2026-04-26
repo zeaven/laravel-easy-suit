@@ -5,9 +5,9 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class CachePersonalAccessToken extends PersonalAccessToken
 {
-  protected $table = 'personal_access_tokens';
+    protected $table = 'personal_access_tokens';
 
-  // 缓存Token时间
+    // 缓存Token时间
     const CACHE_SECOND = 3600;
     public static function findToken($token)
     {
@@ -16,10 +16,16 @@ class CachePersonalAccessToken extends PersonalAccessToken
         }
 
         [$id, $token] = explode('|', $token, 2);
-
+        
         $instance = cache()->tags(['auth'])->remember('CachePersonalAccessToken:'.$id, static::CACHE_SECOND, function () use ($id) {
-          return static::find($id);
+        //   return static::find($id)?->makeVisible('token')?->toArray();
+          return static::with('tokenable')->find($id);
         });
+        // if ($data) {
+        //     $instance = new static();
+        //     $instance->forceFill($data);
+        //     $instance->exists = true; // 很关键 ⚠️
+        // }
         if ($instance) {
             return hash_equals($instance->token, hash('sha256', $token)) ? $instance : null;
         }

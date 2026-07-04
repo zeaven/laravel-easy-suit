@@ -93,6 +93,12 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->app->bind(Authenticate::class, EasySuitAuthenticate::class);
 
+        if (class_exists('\Tymon\JWTAuth\JWTGuard')) {
+            \Tymon\JWTAuth\JWTGuard::macro('getNewToken', function (string $oldToken) {
+                return cache("jwt:token_gracelist:{$oldToken}");
+            });
+        }
+
         // 自定义用户提供者，默认每次通过token查询用户是否存在，自定义提供者可在查询中增加缓存，减少数据库查询，但是用户状态更新不及时
         // 需要手动调用CustomEloquentUserProvider::refresh($key)清除登录缓存
         Auth::provider(

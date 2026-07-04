@@ -10,11 +10,12 @@ use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
+use Illuminate\Auth\Middleware\Authenticate;
 
 /**
  * 自定义JWT-auth认证中间件
  */
-class AutoRefreshJwtAuth
+class AutoRefreshJwtAuth extends Authenticate
 {
     /**
      * Handle an incoming request.
@@ -24,7 +25,7 @@ class AutoRefreshJwtAuth
      *
      * @return mixed
      */
-    public function handle($request, Closure $next, string ...$guards)
+    public function handle($request, Closure $next, ...$guards)
     {
         $useGuard = Auth::getDefaultDriver();
         $guards    = empty($guards) ? [Auth::getDefaultDriver()] : $guards;
@@ -57,8 +58,9 @@ class AutoRefreshJwtAuth
 
             $response = $next($request);
 
-            // Send the refreshed token back to the client.
-            $response->headers->set('Authorization', 'Bearer ' . $refreshToken);
+            // 不返回新的token给客户端，客户端需要请求接口获取新token
+            // 新token应该通过旧token从缓存获取  cache("jwt:token_gracelist:{$token}");
+            // $response->headers->set('Authorization', 'Bearer ' . $refreshToken);
 
             return $response;
         } catch (TokenInvalidException | TokenBlacklistedException $e) {

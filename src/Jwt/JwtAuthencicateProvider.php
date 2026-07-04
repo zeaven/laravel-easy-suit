@@ -4,7 +4,8 @@ namespace Zeaven\EasySuit\Jwt;
 
 use Zeaven\EasySuit\Jwt\AutoRefreshJwtAuth;
 // use Tymon\JWTAuth\Http\Middleware\Authenticate;
-use App\Http\Middleware\Authenticate;
+// use App\Http\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\ServiceProvider;
 
 class JwtAuthencicateProvider extends ServiceProvider

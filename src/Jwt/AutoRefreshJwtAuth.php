@@ -60,7 +60,7 @@ class AutoRefreshJwtAuth extends Authenticate
 
             // 不返回新的token给客户端，客户端需要请求接口获取新token
             // 新token应该通过旧token从缓存获取  cache("jwt:token_gracelist:{$token}");
-            // $response->headers->set('Authorization', 'Bearer ' . $refreshToken);
+            $response->headers->set('X-New-Token', 'clientPull');
 
             return $response;
         } catch (TokenInvalidException | TokenBlacklistedException $e) {
